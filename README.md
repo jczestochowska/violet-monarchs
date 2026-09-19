@@ -38,11 +38,28 @@ Open `http://localhost:3000/`. Auth is two steps: `GLOBAL_PASSWORD` on `/gate` (
 
 Self-hosted from a laptop, exposed via a free Cloudflare Tunnel (no domain currently available, so this uses a **Quick Tunnel** — see `ecosystem.config.js` for why `cloudflared` is deliberately *not* auto-restarted).
 
+### One-time setup
+
+Install `cloudflared` (Ubuntu/Debian, amd64):
+```bash
+curl -L --output /tmp/cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i /tmp/cloudflared.deb
+cloudflared --version   # sanity check
+```
+
+### Manual test (recommended before the event, to see each piece working)
+
+1. Terminal 1 — start the app: `npm start`. You should see `violet-monarchs en écoute sur http://localhost:3000`.
+2. Terminal 2 — open the tunnel: `cloudflared tunnel --url http://localhost:3000`. After a few seconds it prints a box containing a URL like `https://some-random-words.trycloudflare.com` — that's the public link.
+3. Open that URL on your **phone, on cellular data** (not the same WiFi as the laptop) — this is the real test, since it proves an external device can actually reach the laptop through the tunnel.
+4. As long as terminal 2 stays open, the URL stays the same. `Ctrl+C` and rerunning it gives a **different, random** URL — this is why an unattended auto-restart would be dangerous (see below).
+
+### Running it for real, via pm2
+
 ```bash
 npm install -g pm2
-# cloudflared: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
 pm2 start ecosystem.config.js
-pm2 logs cloudflared   # copy the printed https://<random>.trycloudflare.com URL
+pm2 logs cloudflared   # watch for the printed https://<random>.trycloudflare.com URL, Ctrl+C to stop watching (doesn't stop the process)
 ```
 
 Generate the QR code from that URL right before the event starts (not in advance — the URL changes if `cloudflared` restarts). If `cloudflared` dies mid-event, restart it manually (`pm2 restart cloudflared`) and re-share the new URL — it will be different.
