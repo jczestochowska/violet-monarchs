@@ -3,10 +3,12 @@
 <head>
   <% title = 'Mariage Balix' %>
   <%- include('partials/head') %>
+  <!-- Added custom CSS file for glitch, custom font, and green color styles -->
+  <link rel="stylesheet" href="/css/glitch.css">
 </head>
 <body class="home-body">
   <header class="home-header">
-    <h1>Mariage Balix</h1>
+    <h1 class="glitch-move">Mariage Balix</h1>
     <form method="POST" action="/logout" class="logout-form">
       <span class="current-user">Connecté·e en tant que <%= currentUser %></span>
       <button type="submit" class="logout-btn">Déconnexion</button>
@@ -17,7 +19,7 @@
     <h2>Classement</h2>
     <div class="leaderboard-with-legend">
       <div id="leaderboard-container" class="leaderboard-container">
-        <p class="loading">Chargement…</p>
+        <p class="loading glitch-blink">Chargement…</p>
       </div>
       <aside class="leaderboard-legend">
         <p>🥇 1<sup>er</sup> à résoudre</p>
@@ -86,7 +88,9 @@
 
   <div id="bingo-popup" class="modal-overlay" hidden>
     <div class="modal-box popup-box">
-      <p>🎉 Félicitations, tu peux aller demander ton prix aux mariés !</p>
+      <p class="glitch-blink rgb-split" data-text="🎉 Félicitations, tu peux aller demander ton prix aux mariés !">
+        🎉 Félicitations, tu peux aller demander ton prix aux mariés !
+      </p>
       <button type="button" id="bingo-popup-close">Fermer</button>
     </div>
   </div>
@@ -99,6 +103,8 @@
     window.ALL_GUESTS = <%- JSON.stringify(allGuests) %>;
     window.GRID_SIZE = <%- JSON.stringify(gridSize) %>;
   </script>
+  <!-- Ajout du script Matrix Rain -->
+  <script src="/js/matrix.js"></script>
   <script src="/js/leaderboard.js"></script>
   <script src="/js/bingo.js"></script>
 </body>

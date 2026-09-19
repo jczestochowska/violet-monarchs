@@ -20,7 +20,7 @@ app.set('trust proxy', 1); // needed so secure cookies work behind the Cloudflar
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
-
+app.use('/assets', express.static('assets'));
 app.use(
   session({
     store: new SqliteSessionStore(),
