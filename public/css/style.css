@@ -1,0 +1,448 @@
+:root {
+  color-scheme: dark;
+  --bg: #0a0a0a;
+  --panel-bg: #111111;
+  --text: #f5f5f5;
+  --muted: #a0a0a0;
+  --accent: #e8d9ff;
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --cell-bg: #d9d9d9;
+  --cell-text: #111111;
+  font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2 {
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Login page ---------- */
+
+.login-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+.login-card .subtitle {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.login-form label {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.login-form select,
+.login-form input {
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: var(--panel-bg);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.login-form button {
+  margin-top: 1.5rem;
+  padding: 0.85rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #111;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.error-banner {
+  background: rgba(231, 76, 60, 0.15);
+  color: #ff8a80;
+  border: 1px solid var(--red);
+  border-radius: 8px;
+  padding: 0.6rem;
+  font-size: 0.9rem;
+}
+
+/* ---------- Home page ---------- */
+
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #222;
+}
+
+.home-header h1 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.logout-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.current-user {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.logout-btn {
+  background: none;
+  border: 1px solid #444;
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+.panel {
+  padding: 1rem;
+}
+
+.panel h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.bingo-instructions {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0;
+}
+
+/* ---------- Leaderboard ---------- */
+
+.leaderboard-with-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.leaderboard-container {
+  flex: 1 1 280px;
+  overflow-x: auto;
+  background: var(--panel-bg);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.leaderboard-legend {
+  flex: 0 0 auto;
+  background: var(--panel-bg);
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.leaderboard-legend p {
+  margin: 0.3rem 0;
+  white-space: nowrap;
+}
+
+.leaderboard-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 320px;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  text-align: center;
+  padding: 0.4rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.leaderboard-table th {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.leaderboard-table td.guest-name {
+  text-align: left;
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+.leaderboard-table tr.own-row td.guest-name {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.checkbox-empty {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #555;
+  border-radius: 4px;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: var(--green);
+  color: #06280f;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.timestamp {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
+.puzzle-cell {
+  position: relative;
+}
+
+.puzzle-answer-form {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.puzzle-answer-form label {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.puzzle-answer-form input {
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 2px solid var(--accent);
+  background: var(--panel-bg);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.puzzle-answer-form button {
+  margin-top: 0.3rem;
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: #111;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#puzzle-answer-input.shake {
+  animation: shake 0.4s;
+}
+
+#puzzle-answer-input.flash-error {
+  border-color: var(--red);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* ---------- Bingo grid ---------- */
+
+.bingo-grid {
+  display: grid;
+  /* minmax(0, 1fr), not plain 1fr: a bare 1fr track won't shrink below its
+     content's min-content width (e.g. the longest word in a task
+     description), which overflowed the grid past the viewport. */
+  grid-template-columns: repeat(var(--grid-size, 5), minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.bingo-cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  border: none;
+  background: var(--cell-bg);
+  color: var(--cell-text);
+  font-size: 0.78rem;
+  line-height: 1.15;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  cursor: pointer;
+}
+
+.bingo-cell.solved {
+  background: #bcd4ff;
+  cursor: default;
+}
+
+.bingo-cell.line-complete {
+  background: var(--green);
+  color: #06280f;
+}
+
+.bingo-cell .bingo-letter {
+  font-size: 1.9rem;
+  font-weight: 700;
+}
+
+/* ---------- Modals ---------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 20;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal-box {
+  background: var(--panel-bg);
+  border-radius: 12px;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 340px;
+}
+
+.modal-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.modal-box label {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.modal-box input,
+.modal-box select {
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #0a0a0a;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.modal-actions button,
+.popup-box button {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.modal-actions button[type="submit"] {
+  background: var(--accent);
+  color: #111;
+}
+
+.secondary-btn {
+  background: #333 !important;
+  color: var(--muted) !important;
+}
+
+.popup-box {
+  text-align: center;
+}
+
+.popup-box button {
+  margin-top: 1rem;
+  background: var(--green);
+  color: #06280f;
+}
+
+/* ---------- Toast ---------- */
+
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--red);
+  color: #fff;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 30;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast.toast-success {
+  background: var(--green);
+  color: #06280f;
+}
+
+@media (min-width: 700px) {
+  .home-header,
+  .panel {
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
