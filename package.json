@@ -1,0 +1,25 @@
+{
+  "name": "violet-monarchs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Wedding cocktail puzzle & bingo game for Alix & Baptiste",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed-data": "node scripts/seed-data.js",
+    "reset-state": "node scripts/reset-state.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "csv-parse": "^5.5.6",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "multer": "^2.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

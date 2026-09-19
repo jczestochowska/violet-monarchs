@@ -1,0 +1,31 @@
+[
+  { "id": "r0c0", "row": 0, "col": 0, "letter": "D", "description": "Parle une langue que tu ne connais pas", "validNames": ["Baptiste"] },
+  { "id": "r0c1", "row": 0, "col": 1, "letter": "A", "description": "Fait du vélo régulièrement", "validNames": ["Theo"] },
+  { "id": "r0c2", "row": 0, "col": 2, "letter": "N", "description": "A étudié dans un domaine que tu ne connais pas", "validNames": ["Alix"] },
+  { "id": "r0c3", "row": 0, "col": 3, "letter": "S", "description": "A un animal de compagnie", "validNames": ["Justyna"] },
+  { "id": "r0c4", "row": 0, "col": 4, "letter": "L", "description": "A gravi un sommet de 4000m ou plus", "validNames": ["Baptiste", "Theo"] },
+
+  { "id": "r1c0", "row": 1, "col": 0, "letter": "A", "description": "S'est déjà cassé un os", "validNames": ["Theo"] },
+  { "id": "r1c1", "row": 1, "col": 1, "letter": "P", "description": "Est né le même mois que toi", "validNames": ["Alix"] },
+  { "id": "r1c2", "row": 1, "col": 2, "letter": "O", "description": "Récolte des légumes qu'iel a plantés", "validNames": ["Justyna"] },
+  { "id": "r1c3", "row": 1, "col": 3, "letter": "C", "description": "A joué dans une comédie musicale", "validNames": ["Baptiste"] },
+  { "id": "r1c4", "row": 1, "col": 4, "letter": "H", "description": "Écrit un blog", "validNames": ["Theo", "Alix"] },
+
+  { "id": "r2c0", "row": 2, "col": 0, "letter": "E", "description": "A pratiqué le rugby", "validNames": ["Baptiste"] },
+  { "id": "r2c1", "row": 2, "col": 1, "letter": "D", "description": "Joue encore d'un instrument", "validNames": ["Justyna"] },
+  { "id": "r2c2", "row": 2, "col": 2, "letter": "U", "description": "A un tatouage", "validNames": ["Theo"] },
+  { "id": "r2c3", "row": 2, "col": 3, "letter": "T", "description": "A déjà fait du parapente", "validNames": ["Alix"] },
+  { "id": "r2c4", "row": 2, "col": 4, "letter": "E", "description": "Possède un vêtement fait par ses soins", "validNames": ["Baptiste", "Justyna"] },
+
+  { "id": "r3c0", "row": 3, "col": 0, "letter": "M", "description": "A au moins 2 frères et sœurs", "validNames": ["Alix"] },
+  { "id": "r3c1", "row": 3, "col": 1, "letter": "O", "description": "A joué dans un groupe de musique", "validNames": ["Theo"] },
+  { "id": "r3c2", "row": 3, "col": 2, "letter": "I", "description": "A un brevet de secouriste", "validNames": ["Justyna"] },
+  { "id": "r3c3", "row": 3, "col": 3, "letter": "N", "description": "Possède 20 jeux de société ou plus", "validNames": ["Baptiste"] },
+  { "id": "r3c4", "row": 3, "col": 4, "letter": "S", "description": "A couru un marathon", "validNames": ["Alix", "Theo"] },
+
+  { "id": "r4c0", "row": 4, "col": 0, "letter": "V", "description": "Fait de l'art (peinture, dessin, sculpture...)", "validNames": ["Justyna"] },
+  { "id": "r4c1", "row": 4, "col": 1, "letter": "O", "description": "A un doctorat", "validNames": ["Baptiste"] },
+  { "id": "r4c2", "row": 4, "col": 2, "letter": "L", "description": "Médite régulièrement", "validNames": ["Theo"] },
+  { "id": "r4c3", "row": 4, "col": 3, "letter": "A", "description": "Est venu de plus de 500km", "validNames": ["Alix"] },
+  { "id": "r4c4", "row": 4, "col": 4, "letter": "N", "description": "Connait les mariés depuis plus de 10 ans", "validNames": ["Justyna", "Baptiste"] }
+]

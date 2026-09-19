@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <% title = 'Mariage Balix' %>
+  <%- include('partials/head') %>
+</head>
+<body class="home-body">
+  <header class="home-header">
+    <h1>Mariage Balix</h1>
+    <form method="POST" action="/logout" class="logout-form">
+      <span class="current-user">Connecté·e en tant que <%= currentUser %></span>
+      <button type="submit" class="logout-btn">Déconnexion</button>
+    </form>
+  </header>
+
+  <section class="panel" id="leaderboard-section">
+    <h2>Classement</h2>
+    <div class="leaderboard-with-legend">
+      <div id="leaderboard-container" class="leaderboard-container">
+        <p class="loading">Chargement…</p>
+      </div>
+      <aside class="leaderboard-legend">
+        <p>🥇 1<sup>er</sup> à résoudre</p>
+        <p>🥈 2<sup>e</sup> à résoudre</p>
+        <p>🥉 3<sup>e</sup> à résoudre</p>
+        <p>✓ Résolu</p>
+      </aside>
+    </div>
+
+    <form id="puzzle-answer-form" class="puzzle-answer-form">
+      <label for="puzzle-answer-input">Votre réponse</label>
+      <input type="text" id="puzzle-answer-input" autocomplete="off" placeholder="Tape ta réponse ici">
+      <button type="submit">Valider</button>
+    </form>
+  </section>
+
+  <section class="panel" id="bingo-section">
+    <h2>Bingo</h2>
+    <p class="bingo-instructions">
+      Trouve quelqu'un qui correspond à chaque case et prends-le en selfie !
+      Si tu complètes une ligne ou une colonne, va demander ton prix aux mariés.
+    </p>
+    <div class="bingo-grid" style="--grid-size: <%= gridSize %>;">
+      <% bingoGrid.forEach(function(cell) { %>
+        <button
+          type="button"
+          class="bingo-cell<%= cell.solved ? ' solved' : '' %><%= cell.lineComplete ? ' line-complete' : '' %>"
+          data-cell-id="<%= cell.id %>"
+          data-row="<%= cell.row %>"
+          data-col="<%= cell.col %>"
+          data-solved="<%= cell.solved %>"
+          data-description="<%= cell.description %>"
+          data-submitted-name="<%= cell.submittedName || '' %>"
+        >
+          <% if (cell.solved) { %>
+            <span class="bingo-letter"><%= cell.letter %></span>
+          <% } else { %>
+            <span class="bingo-task"><%= cell.description %></span>
+          <% } %>
+        </button>
+      <% }); %>
+    </div>
+  </section>
+
+  <div id="bingo-modal" class="modal-overlay" hidden>
+    <div class="modal-box">
+      <p id="bingo-modal-task" class="bingo-modal-task"></p>
+      <form id="bingo-modal-form" enctype="multipart/form-data">
+        <label for="bingo-person-name">Nom de la personne</label>
+        <select id="bingo-person-name" name="personName" required>
+          <option value="" disabled selected>Choisis un nom</option>
+        </select>
+
+        <label for="bingo-person-photo">Photo (selfie)</label>
+        <input type="file" id="bingo-person-photo" name="selfie" accept="image/*" capture="environment" required>
+
+        <p id="bingo-modal-error" class="error-banner" hidden></p>
+
+        <div class="modal-actions">
+          <button type="button" id="bingo-modal-cancel" class="secondary-btn">Annuler</button>
+          <button type="submit" id="bingo-modal-submit">Valider</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="bingo-popup" class="modal-overlay" hidden>
+    <div class="modal-box popup-box">
+      <p>🎉 Félicitations, tu peux aller demander ton prix aux mariés !</p>
+      <button type="button" id="bingo-popup-close">Fermer</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script id="leaderboard-initial-data" type="application/json"><%- JSON.stringify(leaderboard) %></script>
+  <script>
+    window.CURRENT_USER = <%- JSON.stringify(currentUser) %>;
+    window.ALL_GUESTS = <%- JSON.stringify(allGuests) %>;
+    window.GRID_SIZE = <%- JSON.stringify(gridSize) %>;
+  </script>
+  <script src="/js/leaderboard.js"></script>
+  <script src="/js/bingo.js"></script>
+</body>
+</html>

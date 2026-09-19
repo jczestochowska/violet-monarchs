@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <% title = 'Mariage Balix — Connexion' %>
+  <%- include('partials/head') %>
+</head>
+<body class="login-body">
+  <main class="login-card">
+    <h1>Mariage Balix</h1>
+    <p class="subtitle">Entre ton prénom et le mot de passe pour commencer les énigmes.</p>
+
+    <% if (error) { %>
+      <p class="error-banner"><%= error %></p>
+    <% } %>
+
+    <form method="POST" action="/login" class="login-form">
+      <label for="name">Ton prénom</label>
+      <select id="name" name="name" required>
+        <option value="" disabled selected>Choisis ton prénom</option>
+        <% guests.forEach(function(g) { %>
+          <option value="<%= g %>"><%= g %></option>
+        <% }); %>
+      </select>
+
+      <label for="password">Mot de passe personnel</label>
+      <input id="password" name="password" type="password" autocomplete="off" required>
+
+      <button type="submit">Entrer</button>
+    </form>
+  </main>
+</body>
+</html>
