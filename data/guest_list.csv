@@ -1,0 +1,98 @@
+Prénom,Nom,Nom si initiale,Table,Activité,Mot visible,Paire,Nombre sur le talon,Ordre de résolution,Nombre après échange
+Baptiste,Nicolet,Baptiste,1,,,Chant 2,224,,
+Alix,Pham,Alix P,1,,,,,,
+Eric,Nicolet,Eric,2,Cours de cuisine traditionnelle,chef,Plongée,98,1,301
+Christine,Nicolet,Christine,2,Cours de cuisine traditionnelle,recette,Couture,85,2,172
+Philippe,Barrès,Philippe B,2,Cours de cuisine traditionnelle,ingrédients,Lecture 2,65,3,20
+Sandrine,Barrès,Sandrine,2,Cours de cuisine traditionnelle,casserole,Tricot,270,4,85
+Étienne,de Malleray,Etienne,2,Cours de cuisine traditionnelle,fourneau,Vieilles voitures,61,5,124
+Anne,de Malleray,Anne de M,2,Cours de cuisine traditionnelle,saveurs,Patrimoine,125,6,177
+Jean-Philippe,Leleux,Jean-Philippe,2,Cours de cuisine traditionnelle,épices,Voile,158,7,270
+Anne,Leleux,Anne L,2,Cours de cuisine traditionnelle,tablier,Caravane,124,8,65
+Sylvie,Leriche,Sylvie,3,Croisière en voilier,gréement,Chemin de Saint Jacques,207,1,238
+Françoise,Heilmann,Françoise,3,Croisière en voilier,mât,Art de la table,75,2,61
+Agnès,Laplaze,Agnès,3,Croisière en voilier,vagues,Lecture 1,224,3,199
+Alix,Borlat,Alix B,3,Croisière en voilier,coque,Toulousaines,65,4,98
+Olivier,Borlat,Olivier,3,Croisière en voilier,écume,Travail du bois,156,5,217
+Nada,Hegazy,Nada,3,Croisière en voilier,ancre,Voyages,125,6,65
+Philippe,Pham,Philippe P,4,Tour de vélo,guidon,Squash 1,361,1,189
+Rose-Marie,Martinez,Rose-Marie,4,Tour de vélo,pédales,Fête,270,2,172
+Isabelle,Pham,Isabelle,4,Tour de vélo,chaîne,Natation,207,3,199
+Luis,Rivas,Luis,4,Tour de vélo,roue,Espagne,177,4,98
+Kim-Linh,Rivas Pham,Kim Linh,4,Tour de vélo,vitesses,Chant 2,49,5,224
+Thierry,Leriche,Thierry,4,Tour de vélo,dérailleur,Voyages,65,6,125
+Véronique,Leriche,Véronique,4,Tour de vélo,cadence,Cheval,124,7,361
+Michel,Leriche,Michel,5,Tour panoramique en train,wagon,Travail du bois,217,1,156
+Mireille,Cadorette,Mireille,5,Tour panoramique en train,rails,Lecture 2,20,2,65
+Jean-Louis,Nicolet,Jean-Louis,5,Tour panoramique en train,locomotive,Aquarelle,61,3,177
+Michèle,Nicolet,Michèle,5,Tour panoramique en train,tunnel,Jardinage,49,4,73
+Carine,HAMEL,Carine,5,Tour panoramique en train,gare,Saxophone,224,5,69
+Marion,Stefan,Marion,5,Tour panoramique en train,convoi,Cheval,361,6,124
+Jenny,Purtell,Jenny,6,Concert de musique locale,orchestre,Art de la table,61,1,75
+Penélope,Purtell,Penélope,6,Concert de musique locale,partition,Vieilles voitures,124,2,61
+Didier,Loose,Didier,6,Concert de musique locale,mélodie,Jeux vidéos,69,3,172
+Christophe,Albericci,Christophe,6,Concert de musique locale,instruments,Tennis,49,4,90
+Sophie,Albericci,Sophie A,6,Concert de musique locale,rythme,Fête,172,5,270
+Sylviane,Lesbre,Sylviane,6,Concert de musique locale,applaudissements,Chemin de Saint Jacques,238,6,207
+Marie,Nicolet,Marie,7,Vol en parapente,sellette,Grimpe 1,361,1,229
+Audrenne,Hamel,Audrenne,7,Vol en parapente,aérologie,Natation,199,2,207
+Pierre-Nicolas,Bris,Pierre-Nicolas,7,Vol en parapente,décollage,Star Wars,98,3,125
+Mallorie,Hamel,Mallorie,7,Vol en parapente,thermiques,Danse,49,4,77
+Maxime,Martel,Maxime,7,Vol en parapente,finesse,Rugby,65,5,124
+Florie,Hamel,Florie,7,Vol en parapente,vent,Triathlon,65,6,172
+Gabriel,Purtell,Gabriel P,7,Vol en parapente,atterrissage,Muscu,158,7,28
+Camille,Pham,Camille P,8,Randonnée vers le sommet,sentier,Photo argentique,365,1,213
+Elie,Chemaly,Elie,8,Randonnée vers le sommet,crête,Caravane,65,2,124
+Manon,Leriche,Manon L,8,Randonnée vers le sommet,dénivelé,Chant 1,45,3,177
+Paul,Boucher,Paul,8,Randonnée vers le sommet,bâtons,Jeux vidéos,172,4,69
+Victoire,Leriche,Victoire,8,Randonnée vers le sommet,cairn,Couture,172,5,85
+Gabriel,Leriche,Gabriel L,8,Randonnée vers le sommet,altitude,Vélo,182,6,65
+Joséphine,Yates,Joséphine,9,Descente à ski,spatules,Chant 1,177,1,45
+Timothée,Colinet,Timothée,9,Descente à ski,télésiège,Muscu,28,2,158
+Victor,Ruelle,Victor,9,Descente à ski,piste,Belge,100,3,61
+Mara,Attia,Mara,9,Descente à ski,neige,Star Wars,125,4,98
+Samy,Annabi,Samy,9,Descente à ski,virage,Tennis,90,5,49
+Payvand,Arjmand,Payvand,9,Descente à ski,poudreuse,Photo argentique,213,6,365
+Augustin,Thomas,Augustin,9,Descente à ski,glisse,Parapente 1,301,7,177
+Manon,Morillon,Manon M,9,Descente à ski,chalet,Parapente 2,264,8,65
+Arthur,Toussaint,Arthur,10,Rafting en eaux vives,combinaison,Vélo,65,1,182
+Sophie,De Champs,Sophie D,10,Rafting en eaux vives,pagaie,Tricot,85,2,270
+Guillaume,Solignac,Guillaume S,10,Rafting en eaux vives,embarcation,Fanfare,158,3,42
+Léa,Huarté,Léa,10,Rafting en eaux vives,courant,Art Martiaux,195,4,90
+Matthieu,Royer-Piéchaud,Matthieu,10,Rafting en eaux vives,rapides,Saxophone,69,5,224
+Doriane,Leclerc de Hauteclocque,Doriane,10,Rafting en eaux vives,éclaboussures,Danse,77,6,49
+Quentin,Sellem,Quentin S,10,Rafting en eaux vives,gilet de sauvetage,Squash 2,224,7,177
+Pierre-Louis,Pousse,Pierre-Louis,10,Rafting en eaux vives,rivière,Foot,9,8,27
+Elliot,Vincent,Elliot,10,Rafting en eaux vives,tumulte,Manga,90,9,65
+Rémi,Barrès,Rémi,11,Visite d’un musée,tableau,Art Martiaux,90,1,195
+Alexandra,Dechappe,Alexandra,11,Visite d’un musée,sculpture,Jeux de société,65,2,125
+Théo,Le Signor,Théo,11,Visite d’un musée,collection,Cuisine 1,90,3,61
+Justy,Le Signor,Justy,11,Visite d’un musée,vitrines,Jeux de rôle,172,4,361
+Amélie,Heeb,Amélie,11,Visite d’un musée,audioguide,Peinture,255,5,184
+Clément,Bernard,Clément B,11,Visite d’un musée,conservateur,Foot,27,6,9
+Yona,Tomaiuolo,Yona,11,Visite d’un musée,fresque,Plongée,301,7,98
+Agathe,Arcens,Agathe,11,Visite d’un musée,galerie,Toulousaines,98,8,65
+Hugo,Thierry,Hugo,12,Ascension en via ferrata,longe,Alsace,98,1,88
+Camille,Meyer,Camille T,12,Ascension en via ferrata,baudrier,Patrimoine,177,2,125
+Côme,Cheritel,Côme,12,Ascension en via ferrata,câble,Grimpe 2,98,3,177
+Léa-Marine,Simon,Léa-Marine,12,Ascension en via ferrata,paroi,Lecture 1,199,4,224
+Clément,Lafond,Clément L,12,Ascension en via ferrata,mousquetons,Jeux de rôle,361,5,172
+Caroline,Vibert,Caroline,12,Ascension en via ferrata,échelle,Jeux de société,125,6,65
+Nell,Saunders,Nell,12,Ascension en via ferrata,vertige,Fanfare,42,7,158
+Gautier,Dulac,Gautier,12,Ascension en via ferrata,ponts de singe,Squash 1,189,8,361
+Henry,Papadatos,Henry,13,Nuit en bivouac,tente,Belge,61,1,100
+Aitana,Waelbrock Boix,Aitana,13,Nuit en bivouac,duvet,Espagne,98,2,177
+Florent,Berthet,Florent,13,Nuit en bivouac,tapis de sol,Squash 2,177,3,224
+Guillaume,Vorreux,Guillaume V,13,Nuit en bivouac,réchaud,Manga,65,4,90
+Vincent,Niger,Vincent,13,Nuit en bivouac,lyophilisés,Parapente 2,65,5,264
+Sofya,Lebedeva,Sofya,13,Nuit en bivouac,frontale,Triathlon,172,6,65
+Jean-Luc,Portner,Jean-Luc,13,Nuit en bivouac,étoiles,Grimpe 2,177,7,98
+Valentin,Deschaintre,Valentin,14,Expérience photographique,appareil,Parapente 1,177,1,301
+Yulia,Griyaditskaya,Yulia,14,Expérience photographique,objectif,Peinture,184,2,255
+Nicolas,Roussel,Nicolas,14,Expérience photographique,profondeur de champ,Grimpe 1,229,3,361
+Merlin,Nimier-David,Merlin,14,Expérience photographique,cadrage,Jardinage,73,4,49
+Salma,El Alaoui Talibi,Salma,14,Expérience photographique,sujet,Cuisine 1,61,5,90
+Quentin,Rebjock,Quentin R,14,Expérience photographique,déclencheur,Alsace,88,6,98
+Lucas,Clarté,Lucas C,14,Expérience photographique,exposition,Rugby,124,7,65
+Lucas,Pizzaferri,Lucas P,14,Expérience photographique,vitesse d'obturation,Voile,270,8,158
+Aurore,Keunebroek,Aurore,14,Expérience photographique,pellicule,Aquarelle,177,9,61
