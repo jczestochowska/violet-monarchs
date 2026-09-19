@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <% title = 'Mariage Balix' %>
+  <% title = "Union d'Alix et Baptiste" %>
   <%- include('partials/head') %>
 </head>
 <body class="login-body">
   <main class="login-card">
-    <h1>Mariage Balix</h1>
+    <h1>Union d'Alix et Baptiste</h1>
     <p class="subtitle">Entre le mot de passe pour accéder au site.</p>
 
     <% if (error) { %>
@@ -15,10 +15,14 @@
 
     <form method="POST" action="/gate" class="login-form">
       <label for="password">Mot de passe</label>
-      <input id="password" name="password" type="password" autocomplete="off" autofocus required>
+      <div class="password-field">
+        <input id="password" name="password" type="password" autocomplete="off" autofocus required>
+        <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Afficher le mot de passe">👁</button>
+      </div>
 
       <button type="submit">Entrer</button>
     </form>
   </main>
+  <script src="/js/gate.js"></script>
 </body>
 </html>
