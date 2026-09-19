@@ -7,7 +7,7 @@
   const modalTask = document.getElementById('bingo-modal-task');
   const modalForm = document.getElementById('bingo-modal-form');
   const modalError = document.getElementById('bingo-modal-error');
-  const modalCancel = document.getElementById('bingo-modal-cancel');
+  const modalClose = document.getElementById('bingo-modal-close');
   const nameSelect = document.getElementById('bingo-person-name');
   const photoInput = document.getElementById('bingo-person-photo');
   const submitBtn = document.getElementById('bingo-modal-submit');
@@ -27,12 +27,14 @@
 
   function populateNameOptions() {
     nameSelect.innerHTML = '<option value="" disabled selected>Choisis un nom</option>';
-    ALL_GUESTS.filter((g) => g !== CURRENT_USER && !usedNames.has(g)).forEach((g) => {
-      const option = document.createElement('option');
-      option.value = g;
-      option.textContent = g;
-      nameSelect.appendChild(option);
-    });
+    ALL_GUESTS.filter((g) => g !== CURRENT_USER && !usedNames.has(g))
+      .sort((a, b) => a.localeCompare(b, 'fr'))
+      .forEach((g) => {
+        const option = document.createElement('option');
+        option.value = g;
+        option.textContent = g;
+        nameSelect.appendChild(option);
+      });
   }
 
   function openModalFor(button) {
@@ -46,6 +48,7 @@
 
   function closeModal() {
     modal.hidden = true;
+    modalError.hidden = true;
     activeCellButton = null;
   }
 
@@ -56,7 +59,19 @@
     });
   });
 
-  modalCancel.addEventListener('click', closeModal);
+  modalClose.addEventListener('click', closeModal);
+  nameSelect.addEventListener('change', () => {
+    modalError.hidden = true;
+  });
+
+  // Clicking the dark backdrop (not the box itself) also dismisses it, same
+  // as pressing Escape — both close without requiring a name/photo.
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !modal.hidden) closeModal();
+  });
 
   function cellIdsForLine(line) {
     const ids = [];

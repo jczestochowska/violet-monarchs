@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/', requireAuth, (req, res) => {
   const leaderboard = {
     currentUser: req.session.userName,
-    ...rankingService.computeLeaderboard(staticData.guests),
+    ...rankingService.computeLeaderboard(),
   };
   const bingoGrid = bingoService.getGridForUser(req.session.userName);
 
@@ -24,7 +24,7 @@ router.get('/', requireAuth, (req, res) => {
 });
 
 router.get('/api/leaderboard', requireAuth, (req, res) => {
-  const leaderboard = rankingService.computeLeaderboard(staticData.guests);
+  const leaderboard = rankingService.computeLeaderboard();
   res.json({
     currentUser: req.session.userName,
     ...leaderboard,

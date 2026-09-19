@@ -13,8 +13,7 @@ const TEMPLATES_DIR = path.join(__dirname, '..', 'data-templates');
 const DATA_DIR = path.join(__dirname, '..', 'data');
 
 const files = [
-  ['guests.example.csv', 'guests.csv'],
-  ['puzzles.example.csv', 'puzzles.csv'],
+  ['guest_list_final.example.csv', 'guest_list_final.csv'],
   ['bingo-cells.example.json', 'bingo-cells.json'],
 ];
 

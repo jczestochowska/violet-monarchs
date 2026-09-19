@@ -105,9 +105,6 @@ button, input, select, .panel, .modal-box {
 }
 
 /* Cryptic Page Layout */
-.login-body.cryptic-bg {
-  background-image: url('/assets/Crypticbg.png');
-  
 body.login-body.cryptic-bg {
   background-image: url('/assets/Crypticbg.png') !important;
   background-size: cover !important;
@@ -142,17 +139,22 @@ body.login-body.cryptic-bg {
 }
 
 .cryptic-input, .cryptic-select {
-  background: #000;
-  color: #ff0055;
-  border: 1px solid #ff0055;
+  /* !important: these need to win over .login-form input/.login-form select
+     in style.css, which is more specific (one class + one type selector)
+     than a single class alone. */
+  background: #000 !important;
+  color: #ff0055 !important;
+  border: 1px solid #ff0055 !important;
   padding: 0.8rem;
   font-family: inherit;
   outline: none;
 }
 
 .cryptic-btn {
-  background: #ff0055;
-  color: #000;
+  /* !important: same specificity issue as .cryptic-input above, this time
+     against .login-form button. */
+  background: #ff0055 !important;
+  color: #000 !important;
   font-weight: bold;
   border: none;
   padding: 0.8rem;

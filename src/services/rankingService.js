@@ -25,13 +25,18 @@ function computeMedals(rows, puzzleIds) {
 /**
  * Ranking rule: most puzzles solved first; ties broken by whoever reached
  * that count soonest (their latest solve timestamp, ascending).
+ *
+ * Only guests who have actually entered the site appear at all — most of
+ * the wedding's guest list won't play, so there's no point listing everyone
+ * from the start. "Entered" == has any puzzle_progress row at all, which is
+ * guaranteed the moment they log in (that's when ENTER gets recorded).
  */
-function computeLeaderboard(guests) {
+function computeLeaderboard() {
   const puzzleIds = puzzleService.getPuzzleIds();
   const allProgress = repository.getAllPuzzleProgress();
 
-  const rows = guests.map((user) => {
-    const progress = allProgress.get(user) || new Map();
+  const rows = [...allProgress.keys()].map((user) => {
+    const progress = allProgress.get(user);
     const solves = {};
     let solvedCount = 0;
     let latestTimestamp = null;

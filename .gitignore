@@ -2,3 +2,4 @@ docs/
 node_modules/
 .env
 TODOs.md
+data/state.*

@@ -1,35 +1,30 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <% title = 'Mariage Balix — Connexion' %>
+  <% title = "Union d'Alix et Baptiste — Connexion" %>
   <%- include('partials/head') %>
-  <link rel="stylesheet" href="/css/glitch.css">
 </head>
-<body class="login-body cryptic-bg">
+<body class="login-body">
+  <main class="login-card">
+    <h1>Union d'Alix et Baptiste</h1>
+    <p class="subtitle">Choisis ton prénom pour commencer les énigmes.</p>
+    <p class="subtitle subtitle-warning">Attention, ce choix est définitif : tu ne pourras plus en changer ensuite.</p>
 
-  <!-- Cryptic moving/glitching text floating in the background -->
-  <div id="cryptic-pwd" class="cryptic-glitch-text" data-text="pwd?">pwd?</div>
-
-  <main class="login-card cryptic-card">
     <% if (error) { %>
       <p class="error-banner"><%= error %></p>
     <% } %>
 
-    <form method="POST" action="/login" class="login-form cryptic-form">
-      <!-- Hidden guest selection defaulting or styled minimal dropdown -->
-      <select id="name" name="name" required class="cryptic-select">
-        <option value="" disabled selected>Identifiant</option>
+    <form method="POST" action="/login" class="login-form">
+      <label for="name">Ton prénom</label>
+      <select id="name" name="name" required>
+        <option value="" disabled selected>Choisis ton prénom</option>
         <% guests.forEach(function(g) { %>
           <option value="<%= g %>"><%= g %></option>
         <% }); %>
       </select>
 
-      <input id="password" name="password" type="password" autocomplete="off" placeholder="Mot de passe" required class="cryptic-input">
-
-      <button type="submit" class="cryptic-btn">></button>
+      <button type="submit">Entrer</button>
     </form>
   </main>
-
-  <script src="/js/cryptic-pwd.js"></script>
 </body>
 </html>

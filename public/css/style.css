@@ -9,7 +9,7 @@
   --red: #e74c3c;
   --cell-bg: #d9d9d9;
   --cell-text: #111111;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 * {
@@ -50,6 +50,12 @@ h1, h2 {
   margin-bottom: 1.5rem;
 }
 
+.login-card .subtitle-warning {
+  color: #ff8a80;
+  font-size: 0.85rem;
+  margin-top: -1rem;
+}
+
 .login-form {
   display: flex;
   flex-direction: column;
@@ -71,6 +77,30 @@ h1, h2 {
   background: var(--panel-bg);
   color: var(--text);
   font-size: 1rem;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 2.75rem;
+}
+
+.password-field .toggle-password-btn {
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: 0;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 0.35rem;
+  cursor: pointer;
 }
 
 .login-form button {
@@ -109,24 +139,9 @@ h1, h2 {
   margin: 0;
 }
 
-.logout-form {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 .current-user {
   font-size: 0.75rem;
   color: var(--muted);
-}
-
-.logout-btn {
-  background: none;
-  border: 1px solid #444;
-  color: var(--muted);
-  border-radius: 6px;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.75rem;
 }
 
 .panel {
@@ -296,21 +311,40 @@ h1, h2 {
 }
 
 .bingo-cell {
-  aspect-ratio: 1 / 1;
+  /* No fixed aspect-ratio: forcing height = width clipped long task
+     descriptions on real phones (text got cut off, not just tight). Instead,
+     cells have a floor height for a comfortable tap target and grow taller
+     when their text needs it — a grid row is only as tall as its tallest
+     cell, so short cells in that row just end up vertically centered. */
+  min-height: 4.4rem;
+  /* Grid items get an implicit min-width: auto based on their un-wrapped
+     content size, which overflow-wrap doesn't override — a single long word
+     (e.g. "polytechnicien") could still force this cell wider than its
+     column and push the grid past the viewport. min-width: 0 lets the
+     column's own width (minmax(0, 1fr) above) actually win. */
+  min-width: 0;
   border-radius: 8px;
   border: none;
   background: var(--cell-bg);
   color: var(--cell-text);
-  font-size: 0.78rem;
-  line-height: 1.15;
-  padding: 0.25rem;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  padding: 0.3rem;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  overflow: hidden;
   overflow-wrap: break-word;
   cursor: pointer;
+}
+
+.bingo-cell .bingo-task {
+  /* Same implicit-minimum-size issue as the grid item itself, one level
+     down: as a flex child of .bingo-cell, this span also defaults to
+     min-width: auto based on its un-wrapped content, which would let a
+     single long word push back out past .bingo-cell's now-constrained
+     width. min-width: 0 lets it actually wrap inside the cell. */
+  min-width: 0;
 }
 
 .bingo-cell.solved {
@@ -346,11 +380,30 @@ h1, h2 {
 }
 
 .modal-box {
+  position: relative;
   background: var(--panel-bg);
   border-radius: 12px;
   padding: 1.25rem;
   width: 100%;
   max-width: 340px;
+}
+
+.bingo-modal-task {
+  padding-right: 2rem;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .modal-box form {
@@ -394,11 +447,6 @@ h1, h2 {
 .modal-actions button[type="submit"] {
   background: var(--accent);
   color: #111;
-}
-
-.secondary-btn {
-  background: #333 !important;
-  color: var(--muted) !important;
 }
 
 .popup-box {

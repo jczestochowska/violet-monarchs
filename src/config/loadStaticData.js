@@ -3,46 +3,56 @@ const { parse } = require('csv-parse/sync');
 const env = require('./env');
 const { normalizeText } = require('../utils/normalizeText');
 
-const LOGIN_PUZZLE_ID = 'E1';
+// Not a real puzzle answer typed anywhere — inserted automatically the
+// moment a guest picks their name, so the leaderboard has a "who got here
+// first" column matching Enigme 1 (the gate password, checked separately).
+const LOGIN_PUZZLE_ID = 'ENTER';
 const GRID_SIZE = 5;
+const NAME_COLUMN = 'Nom si initiale';
+const ANSWER_PREFIX = 'Answer';
 
-function loadGuests() {
-  const raw = fs.readFileSync(env.GUESTS_CSV, 'utf8');
+/**
+ * Parses data/guest_list_final.csv (output of scripts/database_generation.py):
+ * one row per guest, "Nom si initiale" as their unique display/login name,
+ * and one "Answer<PUZZLE_ID>" column per puzzle (e.g. AnswerVOLCANO -> VOLCANO).
+ * Guests missing a given Answer column/value simply have no entry for that
+ * puzzle (e.g. the couple don't take part in the table-based puzzles).
+ */
+function loadGuestList() {
+  const raw = fs.readFileSync(env.GUEST_LIST_CSV, 'utf8');
   const records = parse(raw, { columns: true, skip_empty_lines: true, trim: true });
-  const guests = records.map((r) => r.name).filter(Boolean);
-  if (guests.length === 0) {
-    throw new Error(`Aucun invité trouvé dans ${env.GUESTS_CSV}`);
+
+  if (records.length === 0) {
+    throw new Error(`Aucun invité trouvé dans ${env.GUEST_LIST_CSV}`);
   }
-  return guests;
-}
 
-function loadPuzzles() {
-  const raw = fs.readFileSync(env.PUZZLES_CSV, 'utf8');
-  const records = parse(raw, { columns: true, skip_empty_lines: true, trim: true });
+  const answerColumns = Object.keys(records[0]).filter((col) => col.startsWith(ANSWER_PREFIX));
+  const puzzleIds = [LOGIN_PUZZLE_ID, ...answerColumns.map((col) => col.slice(ANSWER_PREFIX.length))];
 
+  const guests = [];
   const solutionsByUser = new Map();
-  const puzzleIdSet = new Set();
 
   for (const row of records) {
-    const user = row.user;
-    const puzzleId = row.puzzle_id;
-    const solution = normalizeText(row.solution);
-    if (!user || !puzzleId || !solution) continue;
+    const name = row[NAME_COLUMN];
+    if (!name) continue;
+    guests.push(name);
 
-    puzzleIdSet.add(puzzleId);
-    if (!solutionsByUser.has(user)) solutionsByUser.set(user, new Map());
-    solutionsByUser.get(user).set(puzzleId, solution);
+    const solutions = new Map();
+    for (const column of answerColumns) {
+      const puzzleId = column.slice(ANSWER_PREFIX.length);
+      const solution = normalizeText(row[column]);
+      if (solution) solutions.set(puzzleId, solution);
+    }
+    solutionsByUser.set(name, solutions);
   }
 
-  if (!puzzleIdSet.has(LOGIN_PUZZLE_ID)) {
+  if (new Set(guests).size !== guests.length) {
     throw new Error(
-      `${env.PUZZLES_CSV} doit contenir une ligne "<invité>,${LOGIN_PUZZLE_ID},<mot de passe personnel>" pour chaque invité — c'est le mot de passe personnel demandé à la connexion.`
+      `${env.GUEST_LIST_CSV}: la colonne "${NAME_COLUMN}" doit être unique pour chaque invité (utilisée comme identifiant de connexion).`
     );
   }
 
-  const puzzleIds = [...puzzleIdSet].sort();
-
-  return { solutionsByUser, puzzleIds };
+  return { guests, solutionsByUser, puzzleIds };
 }
 
 function loadBingoCells() {
@@ -89,8 +99,7 @@ function loadBingoCells() {
 }
 
 function loadStaticData() {
-  const guests = loadGuests();
-  const { solutionsByUser, puzzleIds } = loadPuzzles();
+  const { guests, solutionsByUser, puzzleIds } = loadGuestList();
   const bingoCells = loadBingoCells();
 
   return {

@@ -2,41 +2,43 @@ const express = require('express');
 const staticData = require('../config/staticData');
 const repository = require('../db/repository');
 const requireGate = require('../middleware/requireGate');
-const { normalizeText } = require('../utils/normalizeText');
 
 const router = express.Router();
+
+// Computed once at boot (guest list is static for the process lifetime) so
+// the dropdown always shows names alphabetically rather than CSV row order.
+const sortedGuests = [...staticData.guests].sort((a, b) => a.localeCompare(b, 'fr'));
 
 router.get('/login', requireGate, (req, res) => {
   if (req.session && req.session.userName) {
     return res.redirect('/');
   }
-  res.render('login', { guests: staticData.guests, error: null });
+  res.render('login', { guests: sortedGuests, error: null });
 });
 
 router.post('/login', requireGate, (req, res) => {
+  // Once a name is picked it's locked in for the session — there's no
+  // logout, so re-posting here can't be used to switch identity and submit
+  // answers as someone else.
+  if (req.session.userName) {
+    return res.redirect('/');
+  }
+
   const name = (req.body.name || '').toString();
-  const password = (req.body.password || '').toString();
-
   const matchedGuest = staticData.guests.find((g) => g === name);
-  // The "personal password" is puzzle E1's answer for that specific guest —
-  // read from puzzles.csv, same as every other puzzle — not a fixed secret.
-  const expectedPassword = matchedGuest
-    ? staticData.solutionsByUser.get(matchedGuest)?.get(staticData.LOGIN_PUZZLE_ID)
-    : undefined;
-  const passwordOk = Boolean(expectedPassword) && normalizeText(password) === expectedPassword;
 
-  if (!matchedGuest || !passwordOk) {
+  if (!matchedGuest) {
     return res.status(401).render('login', {
-      guests: staticData.guests,
-      error: "Nom ou mot de passe incorrect.",
+      guests: sortedGuests,
+      error: 'Choisis ton prénom dans la liste.',
     });
   }
 
   req.session.regenerate((err) => {
     if (err) {
       return res.status(500).render('login', {
-        guests: staticData.guests,
-        error: "Une erreur est survenue, réessaie.",
+        guests: sortedGuests,
+        error: 'Une erreur est survenue, réessaie.',
       });
     }
     // regenerate() starts a brand new session, so the gate flag needs
@@ -46,12 +48,6 @@ router.post('/login', requireGate, (req, res) => {
     const now = new Date().toISOString();
     repository.markLogin(matchedGuest, now, staticData.LOGIN_PUZZLE_ID);
     res.redirect('/');
-  });
-});
-
-router.post('/logout', (req, res) => {
-  req.session.destroy(() => {
-    res.redirect('/login');
   });
 });
 
