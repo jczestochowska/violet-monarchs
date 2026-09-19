@@ -9,17 +9,13 @@ npm install
 cp .env.example .env        # then edit GLOBAL_PASSWORD and SESSION_SECRET
 ```
 
-Real guest list / puzzle solutions / bingo answer key go under `data/` (gitignored, never committed):
+Real guest list / puzzle solutions / bingo answer key go under `data/`:
 
 ```bash
-cp data-templates/guests.example.csv data/guests.csv
-cp data-templates/puzzles.example.csv data/puzzles.csv
-cp data-templates/bingo-cells.example.json data/bingo-cells.json
+npm run seed-data     # copies data-templates/*.example.* into data/, skips files that already exist
 ```
 
-Edit those three files with the real content before the event:
-- `data/guests.csv` — one name per line under a `name` header.
-- `data/puzzles.csv` — long format `user,puzzle_id,solution`. The set of distinct `puzzle_id` values present *is* the puzzle list (add/remove a puzzle by adding/removing rows, no code change needed). **`E1` is required for every guest** — it's not solved through the in-app answer box, it's typed as that guest's "personal password" on `/login` (it can be the same value for everyone, or different per guest, since it's just another row in this file).
+- `data/guest_list_final.csv` — the output of `scripts/database_generation.py` (run that script against `data/guest_list.csv` to regenerate it). One row per guest; **`Nom si initiale`** is that guest's unique display name and login identity (first name alone when unambiguous, first name + last initial when two guests share a first name). Every `Answer<PUZZLE_ID>` column (e.g. `AnswerVOLCANO`) becomes one puzzle in the app — add/remove a puzzle by adding/removing that column, no code change needed. A guest with no value in a given `Answer*` column just isn't part of that puzzle (e.g. the couple don't do the table-based ones).
 - `data/bingo-cells.json` — exactly 25 objects (5x5 grid), ids `r0c0`..`r4c4`, each with `letter`, `description`, and `validNames` (the list of guests who satisfy that cell, matched case-insensitively).
 
 ## Running locally
@@ -36,7 +32,7 @@ To clean the db and test from a clean slate:
 npm run reset-state
 ```
 
-Open `http://localhost:3000/`. Auth is two steps: `GLOBAL_PASSWORD` on `/gate` (same for everyone, gets you into the site at all) then, on `/login`, picking a name and entering that guest's personal password — which is their answer to puzzle `E1` in `data/puzzles.csv`, not a separate config value. Runtime state (sessions, puzzle/bingo progress) persists to `data/state.sqlite3`, so restarting the server never loses guest progress.
+Open `http://localhost:3000/`. Auth is two steps: `GLOBAL_PASSWORD` on `/gate` (same for everyone, gets you into the site at all — this is `ANSWER_ENTER` in `database_generation.py`) then, on `/login`, just picking a name from the dropdown — no second password. Once picked, a guest's identity is locked in for the session (there's no logout), so it can't be used to submit answers as someone else. Runtime state (sessions, puzzle/bingo progress) persists to `data/state.sqlite3`, so restarting the server never loses guest progress.
 
 ## Hosting for the event
 
@@ -53,6 +49,6 @@ Generate the QR code from that URL right before the event starts (not in advance
 
 ## Security notes
 
-- Puzzle solutions and the bingo answer key live only in `data/` (gitignored) and are loaded once into server memory; they are never sent to the client in any API/page response.
-- A guest can only submit answers/bingo cells for their own session identity — no route accepts a client-supplied "which user" parameter.
+- Puzzle solutions and the bingo answer key are loaded once into server memory at boot; they are never sent to the client in any API/page response, regardless of whether `data/` itself is committed.
+- A guest can only submit answers/bingo cells for their own session identity — no route accepts a client-supplied "which user" parameter, and identity can't be changed once picked (no logout).
 - Uploaded bingo selfies (`data/uploads/`) are never served over HTTP by the app; retrieve them by copying the folder off the host machine after the event.

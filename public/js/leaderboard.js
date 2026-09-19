@@ -39,7 +39,8 @@
     headRow.appendChild(document.createElement('th'));
     data.puzzleIds.forEach((pid) => {
       const th = document.createElement('th');
-      th.textContent = pid;
+      const solvedByAnyone = data.rows.some((r) => r.solves[pid]);
+      th.textContent = solvedByAnyone ? pid : '?';
       headRow.appendChild(th);
     });
     thead.appendChild(headRow);
