@@ -12,6 +12,12 @@ module.exports = {
   GLOBAL_PASSWORD: (process.env.GLOBAL_PASSWORD || '').trim(),
   // Gates /admin, where a wrong name pick can be undone (see routes/admin.js).
   ADMIN_PASSWORD: (process.env.ADMIN_PASSWORD || '').trim(),
+  // When "true", a bingo cell is only validated if the submitted name is in
+  // that cell's validNames (data/bingo-cells.json). Off by default: without
+  // the ground truth, any name is accepted.
+  BINGO_CHECK_NAMES: ['1', 'true', 'yes', 'on'].includes(
+    (process.env.BINGO_CHECK_NAMES || '').trim().toLowerCase()
+  ),
   SESSION_SECRET: process.env.SESSION_SECRET || 'insecure-dev-secret',
   ROOT_DIR,
   DATA_DIR,
@@ -22,6 +28,7 @@ module.exports = {
   BINGO_CELLS_JSON: path.join(DATA_DIR, 'bingo-cells.json'),
   // Answer key for the "Souvenirs d'Islande" memory grid (see
   // config/loadStaticData.js#loadMemoryWords).
+  COMMON_PASSWORDS_TXT: path.join(DATA_DIR, 'common-passwords.txt'),
   MEMORY_GRID_CSV: path.join(DATA_DIR, 'GridMemory.csv'),
   MEMORY_WORDS_CSV: path.join(DATA_DIR, 'MemoryWords.csv'),
   STATE_DB: path.join(DATA_DIR, 'state.sqlite3'),

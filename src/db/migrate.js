@@ -35,6 +35,20 @@ function migrate() {
       unlocked_at TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS puzzle_blocks (
+      user_name TEXT NOT NULL,
+      puzzle_id TEXT NOT NULL,
+      blocked_at TEXT NOT NULL,
+      PRIMARY KEY (user_name, puzzle_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS help_messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_name TEXT NOT NULL,
+      message TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS memory_word_progress (
       user_name TEXT NOT NULL,
       word_id TEXT NOT NULL,

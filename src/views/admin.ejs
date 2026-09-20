@@ -9,16 +9,132 @@
     <h1>Administration</h1>
   </header>
 
+  <% if (message) { %>
+    <section class="panel">
+      <p class="admin-message"><%= message %></p>
+    </section>
+  <% } %>
+
   <section class="panel">
+    <h2>Messages d'aide</h2>
+    <% if (helpMessages.length === 0) { %>
+      <p class="bingo-instructions">Aucun message pour l'instant.</p>
+    <% } else { %>
+      <ul class="admin-help-list">
+        <% helpMessages.forEach(function(m) { %>
+          <li>
+            <span class="admin-help-meta"><%= m.userName %> · <%= m.createdAt %></span>
+            <p class="admin-help-text"><%= m.message %></p>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+  </section>
+
+  <section class="panel">
+    <h2>Classement</h2>
+    <p class="bingo-instructions">
+      « Retirer » enlève une case cochée (le classement est recalculé pour
+      tout le monde). « Bloquer » retire la case et interdit à ce joueur de
+      jamais valider cette énigme : elle apparaît en rouge pour tous et ne
+      compte plus dans le classement.
+    </p>
+
+    <div class="admin-scroll">
+      <table class="admin-guest-table">
+        <thead>
+          <tr>
+            <th>Joueur</th>
+            <% puzzleIds.forEach(function(pid) { %>
+              <th><%= pid %></th>
+            <% }); %>
+          </tr>
+        </thead>
+        <tbody>
+          <% players.forEach(function(p) { %>
+            <tr>
+              <td><%= p.name %></td>
+              <% p.cells.forEach(function(c) { %>
+                <td>
+                  <% if (c.blocked) { %>
+                    <span class="admin-status-blocked">Bloqué</span>
+                    <form method="POST" action="/admin/progress/unblock" class="admin-inline-form">
+                      <input type="hidden" name="user" value="<%= p.name %>">
+                      <input type="hidden" name="puzzleId" value="<%= c.puzzleId %>">
+                      <button type="submit">Débloquer</button>
+                    </form>
+                  <% } else { %>
+                    <% if (c.solvedAt) { %>
+                      <span class="admin-status-solved">✓ <%= c.solvedAt %></span>
+                      <form method="POST" action="/admin/progress/remove" class="admin-inline-form">
+                        <input type="hidden" name="user" value="<%= p.name %>">
+                        <input type="hidden" name="puzzleId" value="<%= c.puzzleId %>">
+                        <button type="submit">Retirer</button>
+                      </form>
+                    <% } %>
+                    <form method="POST" action="/admin/progress/block" class="admin-inline-form">
+                      <input type="hidden" name="user" value="<%= p.name %>">
+                      <input type="hidden" name="puzzleId" value="<%= c.puzzleId %>">
+                      <button type="submit" class="admin-danger">Bloquer</button>
+                    </form>
+                  <% } %>
+                </td>
+              <% }); %>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Bingo — lignes et colonnes complètes</h2>
+    <p class="bingo-instructions">
+      Pour vérifier que chaque joueur a associé les bonnes personnes. Ouvre un
+      joueur pour voir les cases, les personnes choisies et les selfies (les
+      photos ne sont chargées qu'à l'ouverture).
+    </p>
+    <% if (bingoPlayers.length === 0) { %>
+      <p class="bingo-instructions">Aucune ligne ou colonne complète pour l'instant.</p>
+    <% } %>
+    <% bingoPlayers.forEach(function(p) { %>
+      <details class="admin-bingo-player">
+        <summary><%= p.name %> — <%= p.lines.length %> ligne(s)/colonne(s) complète(s)</summary>
+        <% p.lines.forEach(function(line) { %>
+          <h3 class="admin-bingo-line"><%= line.label %></h3>
+          <div class="admin-scroll">
+            <table class="admin-guest-table">
+              <thead>
+                <tr><th>Description</th><th>Personne choisie</th><th>Selfie</th></tr>
+              </thead>
+              <tbody>
+                <% line.cells.forEach(function(cell) { %>
+                  <tr>
+                    <td><%= cell.description %></td>
+                    <td><%= cell.submittedName %></td>
+                    <td>
+                      <a href="/admin/photos/<%= encodeURIComponent(p.name) %>/<%= cell.id %>" target="_blank" rel="noopener">
+                        <img class="admin-bingo-photo" loading="lazy" alt="Selfie <%= cell.id %>"
+                             src="/admin/photos/<%= encodeURIComponent(p.name) %>/<%= cell.id %>">
+                      </a>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% }); %>
+      </details>
+    <% }); %>
+  </section>
+
+  <section class="panel">
+    <h2>Prénoms</h2>
     <p class="bingo-instructions">
       Si quelqu'un a choisi le mauvais prénom en arrivant sur le site, libère
       ce prénom ici : il redeviendra choisissable dans la liste de connexion
       et toute sa progression (énigmes, bingo) sera effacée.
     </p>
-
-    <% if (message) { %>
-      <p class="admin-message"><%= message %></p>
-    <% } %>
 
     <table class="admin-guest-table">
       <thead>

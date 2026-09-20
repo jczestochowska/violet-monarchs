@@ -50,6 +50,10 @@ function computeCompletedLines(solvedCellIdSet) {
   return completed;
 }
 
+function hasCompletedLine(solvedCellIdSet) {
+  return computeCompletedLines(solvedCellIdSet).size > 0;
+}
+
 /**
  * Cells belonging to any fully-solved row/column, for green-tile rendering.
  */
@@ -89,6 +93,30 @@ function getNewlyCompletedLines(solvedCellIdsBeforeSet, newCellId) {
     }
   }
   return newly;
+}
+
+/**
+ * Completed rows/columns with, for each of their cells, the task description
+ * and the person the guest picked — what an admin needs to check the guest
+ * filled them in honestly. `progress` is repository.getBingoProgress() output.
+ */
+function getCompletedLineDetails(progress) {
+  const lines = [];
+  for (const lineId of computeCompletedLines(new Set(progress.keys()))) {
+    const isRow = lineId.startsWith('row');
+    const index = Number(lineId.slice(3));
+    const cells = [];
+    for (let i = 0; i < GRID_SIZE; i++) {
+      const cellId = isRow ? `r${index}c${i}` : `r${i}c${index}`;
+      cells.push({
+        id: cellId,
+        description: bingoCells.get(cellId).description,
+        submittedName: progress.get(cellId).submittedName,
+      });
+    }
+    lines.push({ label: `${isRow ? 'Ligne' : 'Colonne'} ${index + 1}`, cells });
+  }
+  return lines;
 }
 
 /**
@@ -144,6 +172,8 @@ module.exports = {
   matchesName,
   isNameAlreadyUsedByUser,
   getNewlyCompletedLines,
+  hasCompletedLine,
+  getCompletedLineDetails,
   getGridForUser,
   sanitizeForFilename,
 };

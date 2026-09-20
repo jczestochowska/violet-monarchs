@@ -107,6 +107,11 @@
           ts.textContent = formatTime(solvedAt);
           td.appendChild(check);
           td.appendChild(ts);
+        } else if (rowData.blocks && rowData.blocks[pid]) {
+          const blocked = document.createElement('span');
+          blocked.className = 'checkbox-blocked';
+          blocked.textContent = '✕';
+          td.appendChild(blocked);
         } else {
           const empty = document.createElement('span');
           empty.className = 'checkbox-empty';

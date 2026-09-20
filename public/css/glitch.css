@@ -219,3 +219,20 @@ body.login-body.cryptic-bg {
   50% { text-shadow: -2px 0 #ff0055, 2px 0 #00ffff; }
   100% { text-shadow: 1px -1px #ff0055, -1px 1px #00ffff; }
 }
+
+/* Red variant of a popup (common-password joke), using the gate page's #ff0055
+   in place of the green. Doubled class so it beats the green .modal-box /
+   .popup-box button rules regardless of stylesheet order. */
+.modal-box.popup-red {
+  border-color: #ff0055;
+  color: #ff0055;
+  text-shadow: 0 0 5px rgba(255, 0, 85, 0.5);
+  box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
+}
+
+.modal-box.popup-red button {
+  background: #ff0055;
+  border-color: #ff0055;
+  color: #000;
+  text-shadow: none;
+}

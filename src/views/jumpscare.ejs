@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <% title = "Union d'Alix et Baptiste" %>
+  <%- include('partials/head') %>
+  <link rel="stylesheet" href="/css/glitch.css">
+</head>
+<body class="jumpscare-body">
+  <p class="jumpscare-connected glitch-blink">Connected ...</p>
+
+  <img id="jumpscare-image" class="jumpscare-image" src="/assets/JumpScare.jpg" alt="" hidden>
+
+  <div id="jumpscare-message" class="modal-overlay jumpscare-message" hidden>
+    <div class="modal-box popup-box">
+      <p>Nice try...</p>
+      <a class="jumpscare-restart" href="/gate?restart=1">Retour à la case départ</a>
+    </div>
+  </div>
+
+  <script src="/js/matrix.js"></script>
+  <script>
+    setTimeout(function () {
+      document.getElementById('jumpscare-image').hidden = false;
+    }, 4000);
+    setTimeout(function () {
+      document.getElementById('jumpscare-message').hidden = false;
+    }, 8000);
+  </script>
+</body>
+</html>

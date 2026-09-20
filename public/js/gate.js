@@ -8,4 +8,13 @@
     toggle.setAttribute('aria-label', showing ? 'Afficher le mot de passe' : 'Masquer le mot de passe');
     toggle.textContent = showing ? '👁' : '🙈';
   });
+
+  const popup = document.getElementById('common-password-popup');
+  const popupClose = document.getElementById('common-password-popup-close');
+  if (popup && popupClose) {
+    popupClose.addEventListener('click', () => {
+      popup.hidden = true;
+      input.focus();
+    });
+  }
 })();

@@ -34,23 +34,27 @@ function computeMedals(rows, puzzleIds) {
 function computeLeaderboard() {
   const puzzleIds = puzzleService.getPuzzleIds();
   const allProgress = repository.getAllPuzzleProgress();
+  const allBlocks = repository.getAllPuzzleBlocks();
 
   const rows = [...allProgress.keys()].map((user) => {
     const progress = allProgress.get(user);
+    const userBlocks = allBlocks.get(user) || new Set();
     const solves = {};
+    const blocks = {};
     let solvedCount = 0;
     let latestTimestamp = null;
 
     for (const puzzleId of puzzleIds) {
       const ts = progress.get(puzzleId) || null;
       solves[puzzleId] = ts;
+      blocks[puzzleId] = userBlocks.has(puzzleId);
       if (ts) {
         solvedCount += 1;
         if (!latestTimestamp || ts > latestTimestamp) latestTimestamp = ts;
       }
     }
 
-    return { user, solves, solvedCount, latestTimestamp };
+    return { user, solves, blocks, solvedCount, latestTimestamp };
   });
 
   const rankedOrder = [...rows]

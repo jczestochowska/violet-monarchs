@@ -26,9 +26,12 @@ function attemptSolveAny(userName, answer) {
   }
 
   const alreadySolved = repository.getPuzzleProgress(userName);
+  // Puzzles an admin blocked for this guest (suspected cheating) can never be
+  // solved again, even with the right answer.
+  const blocked = repository.getBlockedPuzzles(userName);
 
   for (const [puzzleId, expected] of userSolutions) {
-    if (alreadySolved.has(puzzleId)) continue;
+    if (alreadySolved.has(puzzleId) || blocked.has(puzzleId)) continue;
     if (expected === normalizedAnswer) {
       const solvedAt = new Date().toISOString();
       repository.recordPuzzleSolve(userName, puzzleId, solvedAt);

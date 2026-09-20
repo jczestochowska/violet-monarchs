@@ -13,6 +13,7 @@ const leaderboardRoutes = require('./routes/leaderboard');
 const bingoRoutes = require('./routes/bingo');
 const adminRoutes = require('./routes/admin');
 const memoryRoutes = require('./routes/memory');
+const helpRoutes = require('./routes/help');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -44,6 +45,7 @@ app.use(leaderboardRoutes);
 app.use(bingoRoutes);
 app.use(adminRoutes);
 app.use(memoryRoutes);
+app.use(helpRoutes);
 
 app.use((req, res) => {
   res.status(404).send('Page introuvable');

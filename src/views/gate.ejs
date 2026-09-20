@@ -24,6 +24,14 @@
       <button type="submit" class="cryptic-btn" aria-label="Entrer">&gt;</button>
     </form>
   </main>
+  <% if (commonPassword) { %>
+    <div id="common-password-popup" class="modal-overlay">
+      <div class="modal-box popup-box popup-red">
+        <p><%= commonPassword %>, sérieusement, haha on me l'avait pas sortie celle-là depuis looooongtemps :)</p>
+        <button type="button" id="common-password-popup-close">Fermer</button>
+      </div>
+    </div>
+  <% } %>
   <script src="/js/gate.js"></script>
   <script src="/js/cryptic-pwd.js"></script>
 </body>

@@ -68,7 +68,7 @@ router.post('/api/bingo/:cellId/solve', requireAuth, uploadSingleSelfie, (req, r
     });
   }
 
-  if (!bingoService.matchesName(cellId, personName)) {
+  if (env.BINGO_CHECK_NAMES && !bingoService.matchesName(cellId, personName)) {
     return res.json({ correct: false });
   }
 
@@ -94,8 +94,18 @@ router.post('/api/bingo/:cellId/solve', requireAuth, uploadSingleSelfie, (req, r
     );
   }
 
+  // The prize popup is only for the guest's very first completed row/column.
+  const showPrizePopup =
+    newlyCompletedLines.length > 0 && !bingoService.hasCompletedLine(solvedBeforeSet);
+
   const cell = staticData.bingoCells.get(cellId);
-  res.json({ correct: true, letter: cell.letter, solvedAt, lineCompleted: newlyCompletedLines });
+  res.json({
+    correct: true,
+    letter: cell.letter,
+    solvedAt,
+    lineCompleted: newlyCompletedLines,
+    showPrizePopup,
+  });
 });
 
 module.exports = router;

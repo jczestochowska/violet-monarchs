@@ -20,6 +20,9 @@ const stmts = {
   getBingoProgressForUser: db.prepare(
     'SELECT cell_id, solved_at, submitted_name, photo_path FROM bingo_progress WHERE user_name = ?'
   ),
+  getAllBingoProgress: db.prepare(
+    'SELECT user_name, cell_id, solved_at, submitted_name, photo_path FROM bingo_progress'
+  ),
   hasBingoCellSolved: db.prepare(
     'SELECT 1 FROM bingo_progress WHERE user_name = ? AND cell_id = ?'
   ),
@@ -44,6 +47,20 @@ const stmts = {
     'INSERT OR IGNORE INTO memory_word_progress (user_name, word_id, found_at) VALUES (?, ?, ?)'
   ),
   deleteMemoryWordProgress: db.prepare('DELETE FROM memory_word_progress WHERE user_name = ?'),
+  deletePuzzleSolve: db.prepare('DELETE FROM puzzle_progress WHERE user_name = ? AND puzzle_id = ?'),
+  insertPuzzleBlock: db.prepare(
+    'INSERT OR IGNORE INTO puzzle_blocks (user_name, puzzle_id, blocked_at) VALUES (?, ?, ?)'
+  ),
+  deletePuzzleBlock: db.prepare('DELETE FROM puzzle_blocks WHERE user_name = ? AND puzzle_id = ?'),
+  getBlocksForUser: db.prepare('SELECT puzzle_id FROM puzzle_blocks WHERE user_name = ?'),
+  getAllPuzzleBlocks: db.prepare('SELECT user_name, puzzle_id FROM puzzle_blocks'),
+  deletePuzzleBlocksForUser: db.prepare('DELETE FROM puzzle_blocks WHERE user_name = ?'),
+  insertHelpMessage: db.prepare(
+    'INSERT INTO help_messages (user_name, message, created_at) VALUES (?, ?, ?)'
+  ),
+  getHelpMessages: db.prepare(
+    'SELECT id, user_name, message, created_at FROM help_messages ORDER BY id DESC'
+  ),
   getAllSessions: db.prepare('SELECT sid, sess FROM sessions'),
   deleteSession: db.prepare('DELETE FROM sessions WHERE sid = ?'),
 };
@@ -94,6 +111,46 @@ function recordPuzzleSolve(userName, puzzleId, timestamp) {
   stmts.insertPuzzleProgress.run(userName, puzzleId, timestamp);
 }
 
+function removePuzzleSolve(userName, puzzleId) {
+  stmts.deletePuzzleSolve.run(userName, puzzleId);
+}
+
+/**
+ * Blocks a guest from ever solving puzzleId: any existing solve is removed in
+ * the same transaction so the leaderboard/ranking drop it immediately.
+ */
+function blockPuzzle(userName, puzzleId, timestamp) {
+  db.transaction(() => {
+    stmts.deletePuzzleSolve.run(userName, puzzleId);
+    stmts.insertPuzzleBlock.run(userName, puzzleId, timestamp);
+  })();
+}
+
+function unblockPuzzle(userName, puzzleId) {
+  stmts.deletePuzzleBlock.run(userName, puzzleId);
+}
+
+function getBlockedPuzzles(userName) {
+  return new Set(stmts.getBlocksForUser.all(userName).map((row) => row.puzzle_id));
+}
+
+function getAllPuzzleBlocks() {
+  const blocksByUser = new Map();
+  for (const row of stmts.getAllPuzzleBlocks.all()) {
+    if (!blocksByUser.has(row.user_name)) blocksByUser.set(row.user_name, new Set());
+    blocksByUser.get(row.user_name).add(row.puzzle_id);
+  }
+  return blocksByUser;
+}
+
+function addHelpMessage(userName, message, timestamp) {
+  stmts.insertHelpMessage.run(userName, message, timestamp);
+}
+
+function getHelpMessages() {
+  return stmts.getHelpMessages.all();
+}
+
 function getBingoProgress(userName) {
   const rows = stmts.getBingoProgressForUser.all(userName);
   const progress = new Map();
@@ -105,6 +162,19 @@ function getBingoProgress(userName) {
     });
   }
   return progress;
+}
+
+function getAllBingoProgress() {
+  const progressByUser = new Map();
+  for (const row of stmts.getAllBingoProgress.all()) {
+    if (!progressByUser.has(row.user_name)) progressByUser.set(row.user_name, new Map());
+    progressByUser.get(row.user_name).set(row.cell_id, {
+      solvedAt: row.solved_at,
+      submittedName: row.submitted_name,
+      photoPath: row.photo_path,
+    });
+  }
+  return progressByUser;
 }
 
 function isBingoCellSolved(userName, cellId) {
@@ -153,6 +223,7 @@ function deleteUserCompletely(userName) {
     stmts.deleteLinesCelebrated.run(user);
     stmts.deleteMemoryUnlock.run(user);
     stmts.deleteMemoryWordProgress.run(user);
+    stmts.deletePuzzleBlocksForUser.run(user);
 
     for (const row of stmts.getAllSessions.all()) {
       let sess;
@@ -176,7 +247,15 @@ module.exports = {
   getAllPuzzleProgress,
   isPuzzleSolved,
   recordPuzzleSolve,
+  removePuzzleSolve,
+  blockPuzzle,
+  unblockPuzzle,
+  getBlockedPuzzles,
+  getAllPuzzleBlocks,
+  addHelpMessage,
+  getHelpMessages,
   getBingoProgress,
+  getAllBingoProgress,
   isBingoCellSolved,
   recordBingoSolve,
   recordLinesCelebrated,

@@ -90,7 +90,7 @@
     button.innerHTML = `<span class="bingo-letter">${letter}</span>`;
   }
 
-  function highlightCompletedLines(lineCompleted) {
+  function highlightCompletedLines(lineCompleted, showPrizePopup) {
     if (!lineCompleted || lineCompleted.length === 0) return;
     lineCompleted.forEach((line) => {
       cellIdsForLine(line).forEach((id) => {
@@ -98,7 +98,7 @@
         if (cell) cell.classList.add('line-complete');
       });
     });
-    popup.hidden = false;
+    if (showPrizePopup) popup.hidden = false;
   }
 
   popupClose.addEventListener('click', () => {
@@ -127,7 +127,7 @@
           usedNames.add(selectedName);
           markCellSolved(activeCellButton, data.letter, selectedName);
           closeModal();
-          highlightCompletedLines(data.lineCompleted);
+          highlightCompletedLines(data.lineCompleted, data.showPrizePopup);
         } else {
           modalError.textContent =
             data.error || "Ce nom ne correspond pas à cette case, réessaye avec quelqu'un d'autre.";
