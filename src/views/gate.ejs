@@ -11,21 +11,17 @@
   <div id="cryptic-pwd" class="cryptic-glitch-text" data-text="pwd?">pwd?</div>
 
   <main class="login-card cryptic-card">
-    <h1>Union d'Alix et Baptiste</h1>
-    <p class="subtitle">Entre le mot de passe pour accéder au site.</p>
-
     <% if (error) { %>
       <p class="error-banner"><%= error %></p>
     <% } %>
 
     <form method="POST" action="/gate" class="login-form cryptic-form">
-      <label for="password">Mot de passe</label>
       <div class="password-field">
-        <input id="password" name="password" type="password" autocomplete="off" autofocus required class="cryptic-input">
+        <input id="password" name="password" type="password" autocomplete="off" autofocus required class="cryptic-input" aria-label="Mot de passe" placeholder="???">
         <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Afficher le mot de passe">👁</button>
       </div>
 
-      <button type="submit" class="cryptic-btn">Entrer</button>
+      <button type="submit" class="cryptic-btn" aria-label="Entrer">&gt;</button>
     </form>
   </main>
   <script src="/js/gate.js"></script>

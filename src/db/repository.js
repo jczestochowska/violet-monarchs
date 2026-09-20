@@ -4,6 +4,7 @@ const stmts = {
   insertUserState: db.prepare(
     'INSERT OR IGNORE INTO user_state (user_name, logged_in_at) VALUES (?, ?)'
   ),
+  getClaimedUserNames: db.prepare('SELECT user_name FROM user_state'),
   insertPuzzleProgress: db.prepare(
     'INSERT OR IGNORE INTO puzzle_progress (user_name, puzzle_id, solved_at) VALUES (?, ?, ?)'
   ),
@@ -31,12 +32,25 @@ const stmts = {
   ),
 };
 
+/**
+ * Atomically claims userName for login, if nobody already has. Returns
+ * true if this call actually claimed it, false if it was already taken
+ * (user_name is the PRIMARY KEY of user_state, so this is race-safe even
+ * across two near-simultaneous requests — whichever's INSERT lands first
+ * wins, the other gets changes === 0).
+ */
 function markLogin(userName, timestamp, loginPuzzleId) {
-  const insertBoth = db.transaction((user, ts, puzzleId) => {
-    stmts.insertUserState.run(user, ts);
+  const claim = db.transaction((user, ts, puzzleId) => {
+    const result = stmts.insertUserState.run(user, ts);
+    if (result.changes === 0) return false;
     stmts.insertPuzzleProgress.run(user, puzzleId, ts);
+    return true;
   });
-  insertBoth(userName, timestamp, loginPuzzleId);
+  return claim(userName, timestamp, loginPuzzleId);
+}
+
+function getClaimedUserNames() {
+  return new Set(stmts.getClaimedUserNames.all().map((row) => row.user_name));
 }
 
 function getPuzzleProgress(userName) {
@@ -94,6 +108,7 @@ function recordLinesCelebrated(userName, lineIds, timestamp) {
 
 module.exports = {
   markLogin,
+  getClaimedUserNames,
   getPuzzleProgress,
   getAllPuzzleProgress,
   isPuzzleSolved,

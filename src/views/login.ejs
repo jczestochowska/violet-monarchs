@@ -3,9 +3,10 @@
 <head>
   <% title = "Union d'Alix et Baptiste — Connexion" %>
   <%- include('partials/head') %>
+  <link rel="stylesheet" href="/css/glitch.css">
 </head>
-<body class="login-body">
-  <main class="login-card">
+<body class="login-body cryptic-bg">
+  <main class="login-card cryptic-card-green">
     <h1>Union d'Alix et Baptiste</h1>
     <p class="subtitle">Choisis ton prénom pour commencer les énigmes.</p>
     <p class="subtitle subtitle-warning">Attention, ce choix est définitif : tu ne pourras plus en changer ensuite.</p>
@@ -14,16 +15,16 @@
       <p class="error-banner"><%= error %></p>
     <% } %>
 
-    <form method="POST" action="/login" class="login-form">
+    <form method="POST" action="/login" class="login-form cryptic-form">
       <label for="name">Ton prénom</label>
-      <select id="name" name="name" required>
+      <select id="name" name="name" required class="cryptic-select-green">
         <option value="" disabled selected>Choisis ton prénom</option>
         <% guests.forEach(function(g) { %>
           <option value="<%= g %>"><%= g %></option>
         <% }); %>
       </select>
 
-      <button type="submit">Entrer</button>
+      <button type="submit" class="cryptic-btn-green">Entrer</button>
     </form>
   </main>
 </body>

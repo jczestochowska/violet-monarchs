@@ -9,11 +9,18 @@ const router = express.Router();
 // the dropdown always shows names alphabetically rather than CSV row order.
 const sortedGuests = [...staticData.guests].sort((a, b) => a.localeCompare(b, 'fr'));
 
+// Names already claimed by someone (logged in) don't show up as choices for
+// anyone else.
+function getAvailableGuests() {
+  const claimed = repository.getClaimedUserNames();
+  return sortedGuests.filter((g) => !claimed.has(g));
+}
+
 router.get('/login', requireGate, (req, res) => {
   if (req.session && req.session.userName) {
     return res.redirect('/');
   }
-  res.render('login', { guests: sortedGuests, error: null });
+  res.render('login', { guests: getAvailableGuests(), error: null });
 });
 
 router.post('/login', requireGate, (req, res) => {
@@ -29,7 +36,7 @@ router.post('/login', requireGate, (req, res) => {
 
   if (!matchedGuest) {
     return res.status(401).render('login', {
-      guests: sortedGuests,
+      guests: getAvailableGuests(),
       error: 'Choisis ton prénom dans la liste.',
     });
   }
@@ -37,16 +44,24 @@ router.post('/login', requireGate, (req, res) => {
   req.session.regenerate((err) => {
     if (err) {
       return res.status(500).render('login', {
-        guests: sortedGuests,
+        guests: getAvailableGuests(),
         error: 'Une erreur est survenue, réessaie.',
+      });
+    }
+    const now = new Date().toISOString();
+    // Atomic claim: whoever's INSERT actually lands first wins, even if two
+    // people submit the same name within milliseconds of each other.
+    const claimed = repository.markLogin(matchedGuest, now, staticData.LOGIN_PUZZLE_ID);
+    if (!claimed) {
+      return res.status(409).render('login', {
+        guests: getAvailableGuests(),
+        error: 'Ce prénom vient d\'être pris par quelqu\'un d\'autre, choisis-en un autre.',
       });
     }
     // regenerate() starts a brand new session, so the gate flag needs
     // re-setting alongside identity — it doesn't carry over automatically.
     req.session.gatePassed = true;
     req.session.userName = matchedGuest;
-    const now = new Date().toISOString();
-    repository.markLogin(matchedGuest, now, staticData.LOGIN_PUZZLE_ID);
     res.redirect('/');
   });
 });

@@ -162,6 +162,40 @@ body.login-body.cryptic-bg {
   transition: opacity 0.2s;
 }
 
+/* Green variant, matching the home page's matrix-terminal palette (#00ff66)
+   instead of the gate page's pink/red — used on the name-picker page. */
+.cryptic-card-green {
+  background: rgba(10, 10, 10, 0.85);
+  border: 1px solid #00ff66;
+  padding: 2rem;
+  z-index: 10;
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.2);
+}
+
+.cryptic-select-green {
+  background: #000 !important;
+  color: #00ff66 !important;
+  border: 1px solid #00ff66 !important;
+  text-shadow: 0 0 5px rgba(0, 255, 102, 0.5);
+  padding: 0.8rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.cryptic-btn-green {
+  background: #00ff66 !important;
+  color: #000 !important;
+  font-weight: bold;
+  border: none;
+  padding: 0.8rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.cryptic-btn-green:hover {
+  opacity: 0.8;
+}
+
 .cryptic-btn:hover {
   opacity: 0.8;
 }

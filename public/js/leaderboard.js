@@ -68,7 +68,7 @@
           const medal = data.medalsByPuzzle && data.medalsByPuzzle[pid] && data.medalsByPuzzle[pid][user];
           const check = document.createElement('span');
           check.className = 'check';
-          check.textContent = medal ? MEDAL_EMOJI[medal] : '✓';
+          check.textContent = medal ? MEDAL_EMOJI[medal] : '';
           const ts = document.createElement('span');
           ts.className = 'timestamp';
           ts.textContent = formatTime(solvedAt);
