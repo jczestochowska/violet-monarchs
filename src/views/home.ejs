@@ -3,10 +3,12 @@
 <head>
   <% title = "Union d'Alix et Baptiste" %>
   <%- include('partials/head') %>
+  <!-- Added custom CSS file for glitch, custom font, and green color styles -->
+  <link rel="stylesheet" href="/css/glitch.css">
 </head>
 <body class="home-body">
   <header class="home-header">
-    <h1>Union d'Alix et Baptiste</h1>
+    <h1 class="glitch-move">Union d'Alix et Baptiste</h1>
     <span class="current-user">Connecté·e en tant que <%= currentUser %></span>
   </header>
 
@@ -14,13 +16,13 @@
     <h2>Classement</h2>
     <div class="leaderboard-with-legend">
       <div id="leaderboard-container" class="leaderboard-container">
-        <p class="loading">Chargement…</p>
+        <p class="loading glitch-blink">Chargement…</p>
       </div>
       <aside class="leaderboard-legend">
-        <p>🥇 1<sup>er</sup> à résoudre</p>
-        <p>🥈 2<sup>e</sup> à résoudre</p>
-        <p>🥉 3<sup>e</sup> à résoudre</p>
-        <p>✓ Résolu</p>
+        <p>🥇 #1 à résoudre</p>
+        <p>🥈 #2 à résoudre</p>
+        <p>🥉 #3 à résoudre</p>
+        <p><span class="legend-swatch"></span> Résolu</p>
       </aside>
     </div>
 
@@ -81,10 +83,29 @@
     </div>
   </div>
 
+  <section class="panel memory-panel" id="memory-section" <% if (!memoryUnlocked) { %>hidden<% } %>>
+    <div class="memory-card">
+      <form id="memory-entry-form" class="memory-entry-form">
+        <label for="memory-entry-input" id="memory-entry-label">Souvenirs d'Islande : </label>
+        <input type="text" id="memory-entry-input" autocomplete="off">
+      </form>
+      <div id="memory-grid" class="memory-grid" style="--memory-cols: 15; --memory-rows: 17;"></div>
+    </div>
+  </section>
+
   <div id="bingo-popup" class="modal-overlay" hidden>
     <div class="modal-box popup-box">
-      <p>🎉 Félicitations, tu peux aller demander ton prix aux mariés !</p>
+      <p class="glitch-blink rgb-split" data-text="🎉 Félicitations, tu peux aller demander ton prix aux mariés !">
+        🎉 Félicitations, tu peux aller demander ton prix aux mariés !
+      </p>
       <button type="button" id="bingo-popup-close">Fermer</button>
+    </div>
+  </div>
+
+  <div id="islande-popup" class="modal-overlay" hidden>
+    <div class="modal-box popup-box">
+      <p>Est-tu certain·e qu'il s'agit du bon mot caché&nbsp;? Regarde plus bas, ça pourrait t'aider.</p>
+      <button type="button" id="islande-popup-close">Fermer</button>
     </div>
   </div>
 
@@ -95,8 +116,12 @@
     window.CURRENT_USER = <%- JSON.stringify(currentUser) %>;
     window.ALL_GUESTS = <%- JSON.stringify(allGuests) %>;
     window.GRID_SIZE = <%- JSON.stringify(gridSize) %>;
+    window.MEMORY_REVEALED_CELLS = <%- JSON.stringify(memoryCells) %>;
   </script>
+  <!-- Ajout du script Matrix Rain -->
+  <script src="/js/matrix.js"></script>
   <script src="/js/leaderboard.js"></script>
   <script src="/js/bingo.js"></script>
+  <script src="/js/memory.js"></script>
 </body>
 </html>

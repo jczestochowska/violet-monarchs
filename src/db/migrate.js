@@ -29,6 +29,18 @@ function migrate() {
       celebrated_at TEXT NOT NULL,
       PRIMARY KEY (user_name, line_id)
     );
+
+    CREATE TABLE IF NOT EXISTS memory_unlocks (
+      user_name TEXT PRIMARY KEY,
+      unlocked_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS memory_word_progress (
+      user_name TEXT NOT NULL,
+      word_id TEXT NOT NULL,
+      found_at TEXT NOT NULL,
+      PRIMARY KEY (user_name, word_id)
+    );
   `);
 }
 

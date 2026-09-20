@@ -11,6 +11,10 @@ const GRID_SIZE = 5;
 const NAME_COLUMN = 'Nom si initiale';
 const ANSWER_PREFIX = 'Answer';
 
+// "Souvenirs d'Islande" memory grid: fixed 15 (wide) x 17 (tall) size.
+const MEMORY_GRID_COLS = 15;
+const MEMORY_GRID_ROWS = 17;
+
 /**
  * Parses data/guest_list_final.csv (output of scripts/database_generation.py):
  * one row per guest, "Nom si initiale" as their unique display/login name,
@@ -98,17 +102,106 @@ function loadBingoCells() {
   return cellsById;
 }
 
+/**
+ * data/GridMemory.csv: the finished 15x17 memory grid, one letter (or empty)
+ * per cell, used only to sanity-check loadMemoryWords() below at boot — the
+ * app never needs the full grid at runtime, only the per-word cell lists.
+ */
+function loadMemoryGrid() {
+  const raw = fs.readFileSync(env.MEMORY_GRID_CSV, 'utf8');
+  const rows = parse(raw, { skip_empty_lines: false, relax_column_count: true });
+
+  if (rows.length !== MEMORY_GRID_ROWS) {
+    throw new Error(
+      `${env.MEMORY_GRID_CSV} doit contenir ${MEMORY_GRID_ROWS} lignes, ${rows.length} trouvées`
+    );
+  }
+
+  return rows.map((row, rowIndex) => {
+    if (row.length !== MEMORY_GRID_COLS) {
+      throw new Error(
+        `${env.MEMORY_GRID_CSV}: la ligne ${rowIndex} doit contenir ${MEMORY_GRID_COLS} colonnes, ${row.length} trouvées`
+      );
+    }
+    return row.map((cell) => (cell || '').trim().toUpperCase());
+  });
+}
+
+/**
+ * data/MemoryWords.csv: one row per hidden word, telling us which cells of
+ * the memory grid it fills in once a guest types it into the "Souvenirs
+ * d'Islande" box. dir=0 lays the word along row `line_col`, columns
+ * start..end; dir=1 lays it down column `line_col`, rows start..end.
+ * Cross-checked letter-by-letter against loadMemoryGrid() so a typo in
+ * either file fails the boot instead of silently drawing the wrong grid.
+ */
+function loadMemoryWords(memoryGrid) {
+  const raw = fs.readFileSync(env.MEMORY_WORDS_CSV, 'utf8');
+  const records = parse(raw, { columns: true, skip_empty_lines: true, trim: true });
+
+  return records.map((row) => {
+    const dir = Number(row.dir);
+    const lineCol = Number(row.line_col);
+    const start = Number(row.start);
+    const end = Number(row.end);
+    const letters = row.word.toUpperCase().split('');
+
+    if (dir !== 0 && dir !== 1) {
+      throw new Error(`${env.MEMORY_WORDS_CSV}: "dir" invalide pour le mot "${row.word}"`);
+    }
+    if (end - start + 1 !== letters.length) {
+      throw new Error(
+        `${env.MEMORY_WORDS_CSV}: la longueur de "${row.word}" ne correspond pas à start/end`
+      );
+    }
+
+    const cells = letters.map((letter, i) => {
+      const cellRow = dir === 0 ? lineCol : start + i;
+      const cellCol = dir === 0 ? start + i : lineCol;
+
+      if (
+        cellRow < 0 ||
+        cellRow >= MEMORY_GRID_ROWS ||
+        cellCol < 0 ||
+        cellCol >= MEMORY_GRID_COLS
+      ) {
+        throw new Error(
+          `${env.MEMORY_WORDS_CSV}: "${row.word}" sort de la grille (ligne ${cellRow}, colonne ${cellCol})`
+        );
+      }
+      if (memoryGrid[cellRow][cellCol] !== letter) {
+        throw new Error(
+          `${env.MEMORY_WORDS_CSV}: "${row.word}" ne correspond pas à ${env.MEMORY_GRID_CSV} ` +
+            `(ligne ${cellRow}, colonne ${cellCol}: attendu "${letter}", grille contient "${memoryGrid[cellRow][cellCol]}")`
+        );
+      }
+      return { row: cellRow, col: cellCol, letter };
+    });
+
+    return {
+      id: row.id,
+      normalizedWord: normalizeText(row.word),
+      cells,
+    };
+  });
+}
+
 function loadStaticData() {
   const { guests, solutionsByUser, puzzleIds } = loadGuestList();
   const bingoCells = loadBingoCells();
+  const memoryGrid = loadMemoryGrid();
+  const memoryWords = loadMemoryWords(memoryGrid);
 
   return {
     guests,
     solutionsByUser,
     puzzleIds,
     bingoCells,
+    memoryWords,
     LOGIN_PUZZLE_ID,
     GRID_SIZE,
+    MEMORY_GRID_COLS,
+    MEMORY_GRID_ROWS,
   };
 }
 

@@ -28,26 +28,59 @@
     setTimeout(() => answerInput.classList.remove('shake', 'flash-error'), 600);
   }
 
+  // Shared with public/js/memory.js.
+  window.showToast = showToast;
+
+  const islandePopup = document.getElementById('islande-popup');
+  const islandePopupClose = document.getElementById('islande-popup-close');
+  if (islandePopupClose) {
+    islandePopupClose.addEventListener('click', () => {
+      islandePopup.hidden = true;
+    });
+  }
+  if (islandePopup) {
+    islandePopup.addEventListener('click', (e) => {
+      if (e.target === islandePopup) islandePopup.hidden = true;
+    });
+  }
+
   const MEDAL_EMOJI = { gold: '🥇', silver: '🥈', bronze: '🥉' };
+
+  // One emoji per puzzle topic, shown in place of the puzzle id once the
+  // viewing guest has solved it themselves (see solvedByCurrentUser below).
+  const TOPIC_EMOJI = {
+    ENTER: '🚪',
+    PAIR: '🃏',
+    OSINT: '📍',
+    BOOK: '📖',
+    BINGO: '⭐',
+    MEMORY: '🧠',
+    VOLCANO: '🌋',
+  };
 
   function render(data) {
     const table = document.createElement('table');
     table.className = 'leaderboard-table';
+
+    const rowsByUser = new Map(data.rows.map((r) => [r.user, r]));
+    const currentUserRow = rowsByUser.get(data.currentUser);
 
     const thead = document.createElement('thead');
     const headRow = document.createElement('tr');
     headRow.appendChild(document.createElement('th'));
     data.puzzleIds.forEach((pid) => {
       const th = document.createElement('th');
-      const solvedByAnyone = data.rows.some((r) => r.solves[pid]);
-      th.textContent = solvedByAnyone ? pid : '?';
+      // Only reveal the topic to a guest once *they* have solved it — not as
+      // soon as anyone has, so puzzle names stay hidden from those who
+      // haven't found them yet.
+      const solvedByCurrentUser = currentUserRow && currentUserRow.solves[pid];
+      th.textContent = solvedByCurrentUser ? (TOPIC_EMOJI[pid] || '❓') : '?';
       headRow.appendChild(th);
     });
     thead.appendChild(headRow);
     table.appendChild(thead);
 
     const tbody = document.createElement('tbody');
-    const rowsByUser = new Map(data.rows.map((r) => [r.user, r]));
 
     data.rankedOrder.forEach((user) => {
       const rowData = rowsByUser.get(user);
@@ -68,7 +101,7 @@
           const medal = data.medalsByPuzzle && data.medalsByPuzzle[pid] && data.medalsByPuzzle[pid][user];
           const check = document.createElement('span');
           check.className = 'check';
-          check.textContent = medal ? MEDAL_EMOJI[medal] : '✓';
+          check.textContent = medal ? MEDAL_EMOJI[medal] : '';
           const ts = document.createElement('span');
           ts.className = 'timestamp';
           ts.textContent = formatTime(solvedAt);
@@ -114,6 +147,15 @@
           answerInput.value = '';
           showToast('Bonne réponse !');
           fetchAndRender();
+        } else if (data.memoryUnlocked) {
+          // Secret keyword, not a puzzle answer: no leaderboard change, and
+          // no "correct answer" toast either — a coy popup nudges the guest
+          // toward the newly-revealed section instead of confirming a win.
+          answerInput.value = '';
+          if (islandePopup) islandePopup.hidden = false;
+          if (typeof window.unlockMemorySection === 'function') {
+            window.unlockMemorySection();
+          }
         } else {
           shakeAnswerBox();
           showToast('Mauvaise réponse, réessaye !', true);

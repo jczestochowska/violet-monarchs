@@ -11,6 +11,8 @@ const gateRoutes = require('./routes/gate');
 const authRoutes = require('./routes/auth');
 const leaderboardRoutes = require('./routes/leaderboard');
 const bingoRoutes = require('./routes/bingo');
+const adminRoutes = require('./routes/admin');
+const memoryRoutes = require('./routes/memory');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -20,7 +22,7 @@ app.set('trust proxy', 1); // needed so secure cookies work behind the Cloudflar
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
-
+app.use('/assets', express.static('assets'));
 app.use(
   session({
     store: new SqliteSessionStore(),
@@ -40,6 +42,8 @@ app.use(gateRoutes);
 app.use(authRoutes);
 app.use(leaderboardRoutes);
 app.use(bingoRoutes);
+app.use(adminRoutes);
+app.use(memoryRoutes);
 
 app.use((req, res) => {
   res.status(404).send('Page introuvable');

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <% title = "Admin — Union d'Alix et Baptiste" %>
+  <%- include('partials/head') %>
+</head>
+<body class="home-body">
+  <header class="home-header">
+    <h1>Administration</h1>
+  </header>
+
+  <section class="panel">
+    <p class="bingo-instructions">
+      Si quelqu'un a choisi le mauvais prénom en arrivant sur le site, libère
+      ce prénom ici : il redeviendra choisissable dans la liste de connexion
+      et toute sa progression (énigmes, bingo) sera effacée.
+    </p>
+
+    <% if (message) { %>
+      <p class="admin-message"><%= message %></p>
+    <% } %>
+
+    <table class="admin-guest-table">
+      <thead>
+        <tr>
+          <th>Prénom</th>
+          <th>Statut</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% guests.forEach(function(g) { %>
+          <tr>
+            <td><%= g.name %></td>
+            <td><%= g.claimed ? 'Pris' : 'Disponible' %></td>
+            <td>
+              <% if (g.claimed) { %>
+                <form method="POST" action="/admin/guests/<%= encodeURIComponent(g.name) %>/release" class="admin-inline-form">
+                  <button type="submit">Libérer</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </section>
+</body>
+</html>
