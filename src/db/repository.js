@@ -30,6 +30,22 @@ const stmts = {
   insertLineCelebrated: db.prepare(
     'INSERT OR IGNORE INTO bingo_lines_celebrated (user_name, line_id, celebrated_at) VALUES (?, ?, ?)'
   ),
+  getMemoryUnlock: db.prepare('SELECT 1 FROM memory_unlocks WHERE user_name = ?'),
+  insertMemoryUnlock: db.prepare(
+    'INSERT OR IGNORE INTO memory_unlocks (user_name, unlocked_at) VALUES (?, ?)'
+  ),
+  deleteUserState: db.prepare('DELETE FROM user_state WHERE user_name = ?'),
+  deletePuzzleProgress: db.prepare('DELETE FROM puzzle_progress WHERE user_name = ?'),
+  deleteBingoProgress: db.prepare('DELETE FROM bingo_progress WHERE user_name = ?'),
+  deleteLinesCelebrated: db.prepare('DELETE FROM bingo_lines_celebrated WHERE user_name = ?'),
+  deleteMemoryUnlock: db.prepare('DELETE FROM memory_unlocks WHERE user_name = ?'),
+  getMemoryWordsFound: db.prepare('SELECT word_id FROM memory_word_progress WHERE user_name = ?'),
+  insertMemoryWordFound: db.prepare(
+    'INSERT OR IGNORE INTO memory_word_progress (user_name, word_id, found_at) VALUES (?, ?, ?)'
+  ),
+  deleteMemoryWordProgress: db.prepare('DELETE FROM memory_word_progress WHERE user_name = ?'),
+  getAllSessions: db.prepare('SELECT sid, sess FROM sessions'),
+  deleteSession: db.prepare('DELETE FROM sessions WHERE sid = ?'),
 };
 
 /**
@@ -106,6 +122,53 @@ function recordLinesCelebrated(userName, lineIds, timestamp) {
   insertMany(userName, lineIds, timestamp);
 }
 
+function isMemoryUnlocked(userName) {
+  return Boolean(stmts.getMemoryUnlock.get(userName));
+}
+
+function unlockMemory(userName, timestamp) {
+  stmts.insertMemoryUnlock.run(userName, timestamp);
+}
+
+function getMemoryWordsFound(userName) {
+  return new Set(stmts.getMemoryWordsFound.all(userName).map((row) => row.word_id));
+}
+
+function recordMemoryWordFound(userName, wordId, timestamp) {
+  stmts.insertMemoryWordFound.run(userName, wordId, timestamp);
+}
+
+/**
+ * Frees a guest name so it can be claimed again from the login dropdown —
+ * used by the admin panel when someone picked the wrong name by mistake.
+ * Wipes every trace of that identity's progress (it belonged to a mistaken
+ * claim, not a real guest) and kicks out any browser currently holding a
+ * session under that name, so the mistaken user is sent back to /login too.
+ */
+function deleteUserCompletely(userName) {
+  const wipe = db.transaction((user) => {
+    stmts.deleteUserState.run(user);
+    stmts.deletePuzzleProgress.run(user);
+    stmts.deleteBingoProgress.run(user);
+    stmts.deleteLinesCelebrated.run(user);
+    stmts.deleteMemoryUnlock.run(user);
+    stmts.deleteMemoryWordProgress.run(user);
+
+    for (const row of stmts.getAllSessions.all()) {
+      let sess;
+      try {
+        sess = JSON.parse(row.sess);
+      } catch (err) {
+        continue;
+      }
+      if (sess.userName === user) {
+        stmts.deleteSession.run(row.sid);
+      }
+    }
+  });
+  wipe(userName);
+}
+
 module.exports = {
   markLogin,
   getClaimedUserNames,
@@ -117,4 +180,9 @@ module.exports = {
   isBingoCellSolved,
   recordBingoSolve,
   recordLinesCelebrated,
+  isMemoryUnlocked,
+  unlockMemory,
+  getMemoryWordsFound,
+  recordMemoryWordFound,
+  deleteUserCompletely,
 };

@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 
 # Nom si initiale  = ID / admin
@@ -46,11 +45,32 @@ dictBook[12] = "Montréal"
 dictBook[13] = "Antibes"
 dictBook[14] = "Palaiseau"
 
+def is_number(s: str) -> bool:
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 dictPair = {}
 uniQuePairs = df.Paire.unique()
 for pair in uniQuePairs:
-    try:
-        dictPair[pair] = pair.split(" ")[0]
+    try :
+        ListWords = pair.split(" ")
+        if len(ListWords)>1:
+            # Either the last word is a number
+            isNumber = is_number(ListWords[-1])
+            if isNumber:
+                word = ""
+                counter = 0
+                for k in range(len(ListWords)-2):
+                    word+=ListWords[k]
+                    word+=" "
+                    counter+=1
+                word+=ListWords[counter]
+                dictPair[pair] = word
+            else :
+                dictPair[pair] = pair
     except:
         print(f"Error processing pair: {pair}")
 
