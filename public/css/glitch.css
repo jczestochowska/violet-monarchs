@@ -62,7 +62,7 @@
 /* 1. Custom Font Definition */
 @font-face {
   font-family: 'GlitchGoblin';
-  src: url('/assets/GlitchGoblin-2O87v.ttf') format('truetype');
+  src: url('/assets/GlitchGoblin_mod.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
