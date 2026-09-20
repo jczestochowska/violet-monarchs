@@ -57,7 +57,7 @@ uniQuePairs = df.Paire.unique()
 for pair in uniQuePairs:
     try :
         ListWords = pair.split(" ")
-        if len(ListWords)>1:
+        if len(ListWords)>=1:
             # Either the last word is a number
             isNumber = is_number(ListWords[-1])
             if isNumber:
