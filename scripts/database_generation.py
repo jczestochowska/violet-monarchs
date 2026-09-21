@@ -16,11 +16,11 @@ df = pd.read_csv("data/guest_list.csv")
 
 ListActivity = df.Activité.unique()
 dictActivity = {}
-dictActivity["Cours de cuisine traditionnelle"] = "cours de cuisine"
+dictActivity["Cours de cuisine traditionnelle"] = "Cuisine"
 dictActivity["Croisière en voilier"] = "voilier"
 dictActivity["Tour de vélo"] = "vélo"
 dictActivity["Tour panoramique en train"] = "train"
-dictActivity["Concert de musique locale"] = "musique"
+dictActivity["Concert de musique locale"] = "concert"
 dictActivity["Vol en parapente"] = "parapente"
 dictActivity["Randonnée vers le sommet"] = "randonnée"
 dictActivity["Descente à ski"] = "ski"
@@ -28,7 +28,7 @@ dictActivity["Rafting en eaux vives"] = "rafting"
 dictActivity["Visite d’un musée"] = "musée"
 dictActivity["Ascension en via ferrata"] = "via ferrata"
 dictActivity["Nuit en bivouac"] = "bivouac"
-dictActivity["Expérience photographique"] = "shooting"
+dictActivity["Expérience photographique"] = "photographie"
 
 dictBook = {}
 dictBook[2] = "Provence"
