@@ -37,6 +37,7 @@ router.post('/gate', gateLimiter, (req, res) => {
   if (!ok) {
     const joke = passwordJokeService.classify(password);
     if (joke === 'jumpscare') {
+      req.session.jumpscarePending = true;
       return res.redirect('/jumpscare');
     }
     return res.status(401).render('gate', {
@@ -49,7 +50,15 @@ router.post('/gate', gateLimiter, (req, res) => {
   res.redirect('/login');
 });
 
+// Only reachable straight after typing a forbidden word on the gate: the flag
+// is spent on the first view, so typing /jumpscare in the address bar (or
+// reloading) just sends you back to the gate.
 router.get('/jumpscare', (req, res) => {
+  if (!req.session.jumpscarePending) {
+    return res.redirect('/gate');
+  }
+  delete req.session.jumpscarePending;
+  res.set('Cache-Control', 'no-store');
   res.render('jumpscare');
 });
 

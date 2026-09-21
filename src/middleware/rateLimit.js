@@ -5,20 +5,32 @@ const TOO_MANY = 'Trop de tentatives, réessaie dans quelques instants.';
 
 // Guests at the venue share one Wi-Fi/mobile IP, so per-IP limits are kept
 // generous: they only stop scripted floods, not a room full of people typing.
-// Once logged in, limits are per guest instead (the limiter must sit after
-// requireAuth in the route).
+// The pre-login routes (gate, login) add a smaller per-browser (cookie) budget
+// underneath, so one person mashing the form only locks themselves out, not
+// everyone behind the same IP. Once logged in, limits are per guest (the
+// limiter must sit after requireAuth in the route).
 
-function createLimiter({ windowMs, limit, perUser = false, failedOnly, onLimit }) {
+const KEY = {
+  user: (req) => `user:${req.session.userName}`,
+  session: (req) => `session:${req.sessionID}`,
+};
+
+/**
+ * @param {object} opts
+ * @param {'user'|'session'} [opts.key] what to count by; default is the client IP
+ * @param {boolean|function} [opts.refund] refund requests that count as
+ *   "successful" once the response is sent, so only the rest eat the budget:
+ *   true = status < 400, or a (req, res) => boolean of your own
+ */
+function createLimiter({ windowMs, limit, key, refund, onLimit }) {
   return rateLimit({
     windowMs,
     limit,
     standardHeaders: 'draft-7',
     legacyHeaders: false,
-    ...(perUser && { keyGenerator: (req) => `user:${req.session.userName}` }),
-    // Successful requests (status < 400, or failedOnly's own test) are refunded
-    // so only failed attempts eat the budget.
-    ...(failedOnly && { skipSuccessfulRequests: true }),
-    ...(typeof failedOnly === 'function' && { requestWasSuccessful: failedOnly }),
+    ...(key && { keyGenerator: KEY[key] }),
+    ...(refund && { skipSuccessfulRequests: true }),
+    ...(typeof refund === 'function' && { requestWasSuccessful: refund }),
     handler: (req, res) => {
       if (onLimit) return onLimit(req, res);
       res.status(429).json({ correct: false, ok: false, error: TOO_MANY });
@@ -26,23 +38,43 @@ function createLimiter({ windowMs, limit, perUser = false, failedOnly, onLimit }
   });
 }
 
+// Without a saved session an anonymous visitor has no stable id to count
+// against (saveUninitialized is off), so give them one. Placed after the IP
+// limiter so a flood that's already refused never creates session rows.
+function rememberVisitor(req, res, next) {
+  req.session.visitor = true;
+  next();
+}
+
+const passedGate = (req) => Boolean(req.session && req.session.gatePassed);
+const wasLimited = (req, res) => res.statusCode === 429;
+
 module.exports = {
-  // Shared password; 302 -> /jumpscare on a wrong one also looks "successful",
-  // so success means the session actually passed the gate.
-  gate: (onLimit) =>
+  // Shared password. A wrong one can answer 302 -> /jumpscare, which also looks
+  // "successful", so success means the session actually passed the gate.
+  // Requests refused by the per-browser budget are refunded to the IP budget so
+  // one person mashing the form can't drain it for everyone.
+  gate: (onLimit) => [
     createLimiter({
       windowMs: 10 * MINUTE,
-      limit: 60,
-      failedOnly: (req) => Boolean(req.session && req.session.gatePassed),
+      limit: 120,
+      refund: (req, res) => passedGate(req) || wasLimited(req, res),
       onLimit,
     }),
-  adminLogin: (onLimit) => createLimiter({ windowMs: 15 * MINUTE, limit: 10, failedOnly: true, onLimit }),
+    rememberVisitor,
+    createLimiter({ windowMs: 10 * MINUTE, limit: 30, key: 'session', refund: passedGate, onLimit }),
+  ],
+  adminLogin: (onLimit) => createLimiter({ windowMs: 15 * MINUTE, limit: 10, refund: true, onLimit }),
   // Counts successes too: each one claims a guest name, so a script could
-  // otherwise grab every name in seconds.
-  login: (onLimit) => createLimiter({ windowMs: 10 * MINUTE, limit: 50, onLimit }),
-  puzzleAnswer: createLimiter({ windowMs: MINUTE, limit: 20, perUser: true }),
-  osintAnswer: createLimiter({ windowMs: MINUTE, limit: 20, perUser: true }),
-  memoryEntry: createLimiter({ windowMs: MINUTE, limit: 40, perUser: true }),
-  bingoUpload: createLimiter({ windowMs: 10 * MINUTE, limit: 30, perUser: true }),
-  help: createLimiter({ windowMs: 10 * MINUTE, limit: 10, perUser: true }),
+  // otherwise grab every name in seconds. (After requireGate, so the session
+  // already exists.) A guest only ever needs a handful of tries themselves.
+  login: (onLimit) => [
+    createLimiter({ windowMs: 10 * MINUTE, limit: 100, refund: wasLimited, onLimit }),
+    createLimiter({ windowMs: 10 * MINUTE, limit: 15, key: 'session', onLimit }),
+  ],
+  puzzleAnswer: createLimiter({ windowMs: MINUTE, limit: 20, key: 'user' }),
+  osintAnswer: createLimiter({ windowMs: MINUTE, limit: 20, key: 'user' }),
+  memoryEntry: createLimiter({ windowMs: MINUTE, limit: 40, key: 'user' }),
+  bingoUpload: createLimiter({ windowMs: 10 * MINUTE, limit: 30, key: 'user' }),
+  help: createLimiter({ windowMs: 10 * MINUTE, limit: 10, key: 'user' }),
 };
