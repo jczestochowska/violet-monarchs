@@ -47,6 +47,12 @@ const stmts = {
     'INSERT OR IGNORE INTO memory_word_progress (user_name, word_id, found_at) VALUES (?, ?, ?)'
   ),
   deleteMemoryWordProgress: db.prepare('DELETE FROM memory_word_progress WHERE user_name = ?'),
+  getOsintStage: db.prepare('SELECT stage FROM osint_progress WHERE user_name = ?'),
+  upsertOsintStage: db.prepare(
+    `INSERT INTO osint_progress (user_name, stage, updated_at) VALUES (?, ?, ?)
+     ON CONFLICT(user_name) DO UPDATE SET stage = excluded.stage, updated_at = excluded.updated_at`
+  ),
+  deleteOsintProgress: db.prepare('DELETE FROM osint_progress WHERE user_name = ?'),
   deletePuzzleSolve: db.prepare('DELETE FROM puzzle_progress WHERE user_name = ? AND puzzle_id = ?'),
   insertPuzzleBlock: db.prepare(
     'INSERT OR IGNORE INTO puzzle_blocks (user_name, puzzle_id, blocked_at) VALUES (?, ?, ?)'
@@ -208,6 +214,16 @@ function recordMemoryWordFound(userName, wordId, timestamp) {
   stmts.insertMemoryWordFound.run(userName, wordId, timestamp);
 }
 
+/** Number of photos revealed so far in the "Où sont les mariés ?" hunt (1 by default). */
+function getOsintStage(userName) {
+  const row = stmts.getOsintStage.get(userName);
+  return row ? row.stage : 1;
+}
+
+function setOsintStage(userName, stage, timestamp) {
+  stmts.upsertOsintStage.run(userName, stage, timestamp);
+}
+
 /**
  * Frees a guest name so it can be claimed again from the login dropdown —
  * used by the admin panel when someone picked the wrong name by mistake.
@@ -223,6 +239,7 @@ function deleteUserCompletely(userName) {
     stmts.deleteLinesCelebrated.run(user);
     stmts.deleteMemoryUnlock.run(user);
     stmts.deleteMemoryWordProgress.run(user);
+    stmts.deleteOsintProgress.run(user);
     stmts.deletePuzzleBlocksForUser.run(user);
 
     for (const row of stmts.getAllSessions.all()) {
@@ -263,5 +280,7 @@ module.exports = {
   unlockMemory,
   getMemoryWordsFound,
   recordMemoryWordFound,
+  getOsintStage,
+  setOsintStage,
   deleteUserCompletely,
 };

@@ -5,6 +5,7 @@ const puzzleService = require('../services/puzzleService');
 const rankingService = require('../services/rankingService');
 const bingoService = require('../services/bingoService');
 const memoryService = require('../services/memoryService');
+const osintService = require('../services/osintService');
 
 const router = express.Router();
 
@@ -25,6 +26,7 @@ router.get('/', requireAuth, (req, res) => {
     gridSize: staticData.GRID_SIZE,
     memoryUnlocked,
     memoryCells,
+    osintStage: osintService.getStage(req.session.userName),
   });
 });
 

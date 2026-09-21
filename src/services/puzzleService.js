@@ -31,6 +31,9 @@ function attemptSolveAny(userName, answer) {
   const blocked = repository.getBlockedPuzzles(userName);
 
   for (const [puzzleId, expected] of userSolutions) {
+    // OSINT is solved through the photo hunt (osintService), so its old
+    // answer typed here must not do anything.
+    if (puzzleId === staticData.OSINT_PUZZLE_ID) continue;
     if (alreadySolved.has(puzzleId) || blocked.has(puzzleId)) continue;
     if (expected === normalizedAnswer) {
       const solvedAt = new Date().toISOString();

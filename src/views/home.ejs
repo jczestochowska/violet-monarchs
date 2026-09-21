@@ -34,6 +34,26 @@
     </form>
   </section>
 
+  <section class="panel" id="osint-section">
+    <h2>Où sont les mariés ?</h2>
+    <div class="osint-photos" id="osint-photos">
+      <% [1, 2, 3].forEach(function(n) { %>
+        <% if (n <= osintStage) { %>
+          <button type="button" class="osint-slot osint-slot-open" data-photo="<%= n %>" aria-label="Agrandir la photo <%= n %>">
+            <img src="/osint/photo/<%= n %>" alt="Photo <%= n %>">
+          </button>
+        <% } else { %>
+          <div class="osint-slot osint-slot-locked" data-photo="<%= n %>" aria-hidden="true">?</div>
+        <% } %>
+      <% }); %>
+    </div>
+    <form id="osint-form" class="puzzle-answer-form">
+      <label for="osint-input">À quel endroit a été prise cette photo, en un seul mot</label>
+      <input type="text" id="osint-input" autocomplete="off" placeholder="Donne ta réponse ici">
+      <button type="submit">Valider</button>
+    </form>
+  </section>
+
   <section class="panel" id="bingo-section">
     <h2>Bingo</h2>
     <div class="bingo-instructions bingo-poem">
@@ -124,6 +144,17 @@
     </div>
   </div>
 
+  <div id="osint-popup" class="modal-overlay" hidden>
+    <div class="modal-box popup-box">
+      <p id="osint-popup-text"></p>
+      <button type="button" id="osint-popup-close">Fermer</button>
+    </div>
+  </div>
+
+  <div id="osint-lightbox" class="osint-lightbox" hidden>
+    <img id="osint-lightbox-img" alt="">
+  </div>
+
   <button type="button" id="help-button" class="help-fab" aria-label="Besoin d'aide ?">?</button>
 
   <div id="help-modal" class="modal-overlay" hidden>
@@ -155,6 +186,7 @@
   <script src="/js/leaderboard.js"></script>
   <script src="/js/bingo.js"></script>
   <script src="/js/memory.js"></script>
+  <script src="/js/osint.js"></script>
   <script src="/js/help.js"></script>
 </body>
 </html>

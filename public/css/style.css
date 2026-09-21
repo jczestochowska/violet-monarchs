@@ -803,3 +803,72 @@ h1, h2 {
     margin-right: auto;
   }
 }
+
+/* ---------- "Où sont les mariés ?" photo hunt ---------- */
+
+.osint-photos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.osint-slot {
+  aspect-ratio: 2 / 3; /* the photos are portrait */
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 0;
+}
+
+.osint-slot-locked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel-bg);
+  color: var(--muted);
+  font-size: clamp(2.5rem, 14vw, 5rem);
+  font-weight: 700;
+  user-select: none;
+}
+
+.osint-slot-open {
+  background: var(--panel-bg);
+  cursor: zoom-in;
+}
+
+.osint-slot-open img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.osint-slot-reveal {
+  animation: osint-reveal 0.6s ease-out;
+}
+
+@keyframes osint-reveal {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.osint-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.95);
+  cursor: zoom-out;
+}
+
+.osint-lightbox[hidden] {
+  display: none;
+}
+
+.osint-lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}

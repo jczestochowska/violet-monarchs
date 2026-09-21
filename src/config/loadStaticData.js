@@ -7,6 +7,9 @@ const { normalizeText } = require('../utils/normalizeText');
 // moment a guest picks their name, so the leaderboard has a "who got here
 // first" column matching Enigme 1 (the gate password, checked separately).
 const LOGIN_PUZZLE_ID = 'ENTER';
+// Solved through the "Où sont les mariés ?" photo hunt (services/osintService.js),
+// not by typing its answer into the main box, so puzzleService skips it.
+const OSINT_PUZZLE_ID = 'OSINT';
 const GRID_SIZE = 5;
 const NAME_COLUMN = 'Nom si initiale';
 const ANSWER_PREFIX = 'Answer';
@@ -199,6 +202,7 @@ function loadStaticData() {
     bingoCells,
     memoryWords,
     LOGIN_PUZZLE_ID,
+    OSINT_PUZZLE_ID,
     GRID_SIZE,
     MEMORY_GRID_COLS,
     MEMORY_GRID_ROWS,

@@ -14,6 +14,7 @@ const bingoRoutes = require('./routes/bingo');
 const adminRoutes = require('./routes/admin');
 const memoryRoutes = require('./routes/memory');
 const helpRoutes = require('./routes/help');
+const osintRoutes = require('./routes/osint');
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -23,6 +24,12 @@ app.set('trust proxy', 1); // needed so secure cookies work behind the Tailscale
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
+// The "Où sont les mariés ?" photos are only served through /osint/photo/:n,
+// once the guest has unlocked them, so they can't be fetched from here.
+app.use('/assets', (req, res, next) => {
+  if (/^\/picture\d/i.test(req.path)) return res.status(404).send('Page introuvable');
+  next();
+});
 app.use('/assets', express.static('assets'));
 app.use(
   session({
@@ -46,6 +53,7 @@ app.use(bingoRoutes);
 app.use(adminRoutes);
 app.use(memoryRoutes);
 app.use(helpRoutes);
+app.use(osintRoutes);
 
 app.use((req, res) => {
   res.status(404).send('Page introuvable');

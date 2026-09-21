@@ -169,6 +169,9 @@
       .catch(() => showToast('Erreur réseau, réessaye.', true));
   });
 
+  // Shared with public/js/osint.js.
+  window.refreshLeaderboard = fetchAndRender;
+
   const initialDataEl = document.getElementById('leaderboard-initial-data');
   if (initialDataEl) {
     try {

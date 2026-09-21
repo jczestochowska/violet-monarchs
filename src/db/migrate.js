@@ -49,6 +49,13 @@ function migrate() {
       created_at TEXT NOT NULL
     );
 
+    -- "Où sont les mariés ?" photo hunt: how many photos this guest has revealed (1-3).
+    CREATE TABLE IF NOT EXISTS osint_progress (
+      user_name TEXT PRIMARY KEY,
+      stage INTEGER NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS memory_word_progress (
       user_name TEXT NOT NULL,
       word_id TEXT NOT NULL,
