@@ -7,6 +7,7 @@ const requireAdmin = require('../middleware/requireAdmin');
 const rankingService = require('../services/rankingService');
 const bingoService = require('../services/bingoService');
 const { normalizeText } = require('../utils/normalizeText');
+const rateLimit = require('../middleware/rateLimit');
 
 const router = express.Router();
 
@@ -47,7 +48,13 @@ router.get('/admin/login', (req, res) => {
   res.render('admin-login', { error: null });
 });
 
-router.post('/admin/login', (req, res) => {
+const adminLoginLimiter = rateLimit.adminLogin((req, res) =>
+  res.status(429).render('admin-login', {
+    error: 'Trop de tentatives, réessaie dans quelques minutes.',
+  })
+);
+
+router.post('/admin/login', adminLoginLimiter, (req, res) => {
   const password = (req.body.password || '').toString();
   const ok =
     env.ADMIN_PASSWORD.length > 0 && normalizeText(password) === normalizeText(env.ADMIN_PASSWORD);

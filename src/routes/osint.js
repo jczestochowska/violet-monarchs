@@ -3,10 +3,11 @@ const express = require('express');
 const env = require('../config/env');
 const requireAuth = require('../middleware/requireAuth');
 const osintService = require('../services/osintService');
+const rateLimit = require('../middleware/rateLimit');
 
 const router = express.Router();
 
-router.post('/api/osint/answer', requireAuth, (req, res) => {
+router.post('/api/osint/answer', requireAuth, rateLimit.osintAnswer, (req, res) => {
   const text = (req.body.text || '').toString();
   res.json(osintService.attempt(req.session.userName, text));
 });

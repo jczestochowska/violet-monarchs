@@ -66,6 +66,7 @@
           } else {
             shakeInput();
             glitchLabel();
+            if (data.error && window.showToast) window.showToast(data.error, true);
           }
         })
         .catch(() => {

@@ -6,6 +6,7 @@ const rankingService = require('../services/rankingService');
 const bingoService = require('../services/bingoService');
 const memoryService = require('../services/memoryService');
 const osintService = require('../services/osintService');
+const rateLimit = require('../middleware/rateLimit');
 
 const router = express.Router();
 
@@ -27,6 +28,7 @@ router.get('/', requireAuth, (req, res) => {
     memoryUnlocked,
     memoryCells,
     osintStage: osintService.getStage(req.session.userName),
+    osintSolved: osintService.isSolved(req.session.userName),
   });
 });
 
@@ -38,7 +40,7 @@ router.get('/api/leaderboard', requireAuth, (req, res) => {
   });
 });
 
-router.post('/api/puzzles/solve', requireAuth, (req, res) => {
+router.post('/api/puzzles/solve', requireAuth, rateLimit.puzzleAnswer, (req, res) => {
   const answer = (req.body.answer || '').toString();
   const result = puzzleService.attemptSolveAny(req.session.userName, answer);
   const memoryUnlocked = memoryService.attemptUnlock(req.session.userName, answer);

@@ -2,6 +2,7 @@ const express = require('express');
 const staticData = require('../config/staticData');
 const repository = require('../db/repository');
 const requireGate = require('../middleware/requireGate');
+const rateLimit = require('../middleware/rateLimit');
 
 const router = express.Router();
 
@@ -23,7 +24,14 @@ router.get('/login', requireGate, (req, res) => {
   res.render('login', { guests: getAvailableGuests(), error: null });
 });
 
-router.post('/login', requireGate, (req, res) => {
+const loginLimiter = rateLimit.login((req, res) =>
+  res.status(429).render('login', {
+    guests: getAvailableGuests(),
+    error: 'Trop de tentatives, réessaie dans quelques minutes.',
+  })
+);
+
+router.post('/login', requireGate, loginLimiter, (req, res) => {
   // Once a name is picked it's locked in for the session — there's no
   // logout, so re-posting here can't be used to switch identity and submit
   // answers as someone else.

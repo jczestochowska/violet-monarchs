@@ -7,6 +7,7 @@ const staticData = require('../config/staticData');
 const requireAuth = require('../middleware/requireAuth');
 const repository = require('../db/repository');
 const bingoService = require('../services/bingoService');
+const rateLimit = require('../middleware/rateLimit');
 
 const router = express.Router();
 
@@ -40,7 +41,9 @@ function uploadSingleSelfie(req, res, next) {
   });
 }
 
-router.post('/api/bingo/:cellId/solve', requireAuth, uploadSingleSelfie, (req, res) => {
+// The limiter runs before multer so a flood of uploads is refused before any
+// file gets buffered in memory.
+router.post('/api/bingo/:cellId/solve', requireAuth, rateLimit.bingoUpload, uploadSingleSelfie, (req, res) => {
   const { cellId } = req.params;
   const userName = req.session.userName;
 

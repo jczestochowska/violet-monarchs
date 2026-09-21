@@ -39,4 +39,8 @@ function attempt(userName, text) {
   return { result: 'solved', stage };
 }
 
-module.exports = { PHOTO_COUNT, getStage, attempt };
+function isSolved(userName) {
+  return repository.isPuzzleSolved(userName, staticData.OSINT_PUZZLE_ID);
+}
+
+module.exports = { PHOTO_COUNT, getStage, isSolved, attempt };

@@ -13,7 +13,7 @@
   const popupClose = document.getElementById('osint-popup-close');
   const lightbox = document.getElementById('osint-lightbox');
   const lightboxImg = document.getElementById('osint-lightbox-img');
-  if (!photos || !form) return;
+  if (!photos) return;
 
   function openLightbox(img) {
     lightboxImg.src = img.src;
@@ -64,6 +64,9 @@
     setTimeout(() => input.classList.remove('shake', 'flash-error'), 600);
   }
 
+  // Already solved on page load: the server didn't render the form.
+  if (!form) return;
+
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const text = input.value;
@@ -82,13 +85,14 @@
           popupText.textContent = ADVANCE_MESSAGES[data.stage] || '';
           popup.hidden = false;
         } else if (data.result === 'solved') {
-          // Same feedback as a correct answer in the main box.
-          input.value = '';
+          // Same feedback as a correct answer in the main box; nothing left to
+          // answer, so the form goes away.
+          form.remove();
           window.showToast('Bonne réponse !');
           window.refreshLeaderboard();
         } else {
           shakeInput();
-          window.showToast('Mauvaise réponse, réessaye !', true);
+          window.showToast(data.error || 'Mauvaise réponse, réessaye !', true);
         }
       })
       .catch(() => window.showToast('Erreur réseau, réessaye.', true));

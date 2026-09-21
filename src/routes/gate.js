@@ -2,6 +2,7 @@ const express = require('express');
 const env = require('../config/env');
 const { normalizeText } = require('../utils/normalizeText');
 const passwordJokeService = require('../services/passwordJokeService');
+const rateLimit = require('../middleware/rateLimit');
 
 const router = express.Router();
 
@@ -20,7 +21,14 @@ router.get('/gate', (req, res) => {
   res.render('gate', { error: null, commonPassword: null });
 });
 
-router.post('/gate', (req, res) => {
+const gateLimiter = rateLimit.gate((req, res) =>
+  res.status(429).render('gate', {
+    error: 'Trop de tentatives, réessaie dans quelques minutes.',
+    commonPassword: null,
+  })
+);
+
+router.post('/gate', gateLimiter, (req, res) => {
   const password = (req.body.password || '').toString();
   const ok =
     env.GLOBAL_PASSWORD.length > 0 &&

@@ -47,11 +47,13 @@
         <% } %>
       <% }); %>
     </div>
-    <form id="osint-form" class="puzzle-answer-form">
-      <label for="osint-input">À quel endroit a été prise cette photo, en un seul mot</label>
-      <input type="text" id="osint-input" autocomplete="off" placeholder="Donne ta réponse ici">
-      <button type="submit">Valider</button>
-    </form>
+    <% if (!osintSolved) { %>
+      <form id="osint-form" class="puzzle-answer-form">
+        <label for="osint-input">À quel endroit a été prise cette photo, en un seul mot</label>
+        <input type="text" id="osint-input" autocomplete="off" placeholder="Donne ta réponse ici">
+        <button type="submit">Valider</button>
+      </form>
+    <% } %>
   </section>
 
   <section class="panel" id="bingo-section">
@@ -175,7 +177,7 @@
   <div id="toast" class="toast" hidden></div>
 
   <script id="leaderboard-initial-data" type="application/json"><%- JSON.stringify(leaderboard) %></script>
-  <script>
+  <script nonce="<%= cspNonce %>">
     window.CURRENT_USER = <%- JSON.stringify(currentUser) %>;
     window.ALL_GUESTS = <%- JSON.stringify(allGuests) %>;
     window.GRID_SIZE = <%- JSON.stringify(gridSize) %>;

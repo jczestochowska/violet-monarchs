@@ -1,12 +1,13 @@
 const express = require('express');
 const requireAuth = require('../middleware/requireAuth');
 const repository = require('../db/repository');
+const rateLimit = require('../middleware/rateLimit');
 
 const router = express.Router();
 
 const MAX_MESSAGE_LENGTH = 1000;
 
-router.post('/api/help', requireAuth, (req, res) => {
+router.post('/api/help', requireAuth, rateLimit.help, (req, res) => {
   const message = (req.body.message || '').toString().trim();
   if (!message) {
     return res.status(400).json({ ok: false, error: 'Écris un message avant d\'envoyer.' });

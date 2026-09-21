@@ -163,7 +163,7 @@
           }
         } else {
           shakeAnswerBox();
-          showToast('Mauvaise réponse, réessaye !', true);
+          showToast(data.error || 'Mauvaise réponse, réessaye !', true);
         }
       })
       .catch(() => showToast('Erreur réseau, réessaye.', true));

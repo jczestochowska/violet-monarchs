@@ -1,5 +1,7 @@
 const path = require('path');
+const crypto = require('crypto');
 const express = require('express');
+const helmet = require('helmet');
 const session = require('express-session');
 const SqliteSessionStore = require('./db/sessionStore');
 
@@ -20,6 +22,31 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.set('trust proxy', 1); // needed so secure cookies work behind the Tailscale Funnel proxy
+
+// Inline <script> blocks (home + jumpscare views) carry this per-request nonce;
+// everything else must come from our own origin. Inline style="" attributes
+// are used for CSS variables, hence 'unsafe-inline' for styles only.
+app.use((req, res, next) => {
+  res.locals.cspNonce = crypto.randomBytes(16).toString('base64');
+  next();
+});
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:'],
+        fontSrc: ["'self'"],
+        connectSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+        upgradeInsecureRequests: null, // would break plain-http local testing
+      },
+    },
+  })
+);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
