@@ -36,33 +36,90 @@ Open `http://localhost:3000/`. Auth is two steps: `GLOBAL_PASSWORD` on `/gate` (
 
 ## Hosting for the event
 
-Self-hosted from a laptop, exposed via a free Cloudflare Tunnel (no domain currently available, so this uses a **Quick Tunnel** — see `ecosystem.config.js` for why `cloudflared` is deliberately *not* auto-restarted).
+Self-hosted from a laptop: pm2 keeps the app running on port 3000, and [Tailscale Funnel](https://tailscale.com/kb/1223/funnel) publishes it on a **permanent** public HTTPS URL, `https://violet-monarchs.lyrebird-gentoo.ts.net` (`https://<machine>.<tailnet>.ts.net`). The URL depends only on the machine name and the tailnet name, so it survives restarts and reboots and the QR code can be printed in advance. Guests need nothing installed.
 
 ### One-time setup
 
-Install `cloudflared` (Ubuntu/Debian, amd64):
-```bash
-curl -L --output /tmp/cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
-sudo dpkg -i /tmp/cloudflared.deb
-cloudflared --version   # sanity check
-```
+1. Install Tailscale and log in: `curl -fsSL https://tailscale.com/install.sh | sh && sudo tailscale up`
+2. In the [admin console](https://login.tailscale.com/admin) → DNS: make sure **MagicDNS** and **HTTPS Certificates** are enabled, and optionally rename the tailnet (it is part of the public URL, so do this **before** printing anything).
+3. Machines page → this machine → menu → **Disable key expiry**, otherwise the machine drops off the tailnet when its key expires and the funnel goes offline.
+4. Pick the machine name that will appear in the URL (don't rename it afterwards):
+   ```bash
+   sudo tailscale set --hostname=violet-monarchs
+   ```
+5. Install pm2: `npm install -g pm2`
 
-### Manual test (recommended before the event, to see each piece working)
-
-1. Terminal 1 — start the app: `npm start`. You should see `violet-monarchs en écoute sur http://localhost:3000`.
-2. Terminal 2 — open the tunnel: `cloudflared tunnel --url http://localhost:3000`. After a few seconds it prints a box containing a URL like `https://some-random-words.trycloudflare.com` — that's the public link.
-3. Open that URL on your **phone, on cellular data** (not the same WiFi as the laptop) — this is the real test, since it proves an external device can actually reach the laptop through the tunnel.
-4. As long as terminal 2 stays open, the URL stays the same. `Ctrl+C` and rerunning it gives a **different, random** URL — this is why an unattended auto-restart would be dangerous (see below).
-
-### Running it for real, via pm2
+### Start the app (pm2)
 
 ```bash
-npm install -g pm2
-pm2 start ecosystem.config.js
-pm2 logs cloudflared   # watch for the printed https://<random>.trycloudflare.com URL, Ctrl+C to stop watching (doesn't stop the process)
+pm2 start ecosystem.config.js --only violet-monarchs
+curl -I http://localhost:3000     # should answer
 ```
 
-Generate the QR code from that URL right before the event starts (not in advance — the URL changes if `cloudflared` restarts). If `cloudflared` dies mid-event, restart it manually (`pm2 restart cloudflared`) and re-share the new URL — it will be different.
+### Publish it (Tailscale Funnel)
+
+```bash
+tailscale funnel --bg 3000        # first run prints a link to approve Funnel in the browser
+tailscale funnel status           # shows the public URL
+```
+
+The funnel configuration persists across reboots. DNS can take up to ~10 minutes to work the first time. Recreate or change it:
+
+```bash
+tailscale funnel reset            # remove the funnel config (site goes offline)
+tailscale funnel --bg 3000        # recreate it (use the new port if the app's PORT changed)
+tailscale status                  # check the machine is logged in / connected
+```
+
+### Restart the app after a reboot (pm2 startup daemon)
+
+Run once, after the app is online and `pm2 status` looks right:
+
+```bash
+pm2 save                          # snapshot the current process list to ~/.pm2/dump.pm2
+pm2 startup                       # prints a `sudo env PATH=... pm2 startup systemd ...` line: copy and run it
+```
+
+Afterwards the machine restores the saved process list on every boot. Verify with `systemctl status pm2-$USER`, then reboot and check `pm2 status`, `curl -I http://localhost:3000` and `tailscale funnel status`.
+
+- Only `pm2 save` changes what is restored at boot. `pm2 stop/start/restart` don't, but **never `pm2 save` while the app is stopped** (it would be saved as stopped).
+- Rerun `pm2 save` after any change to the process list or config.
+- Tailscale restores the funnel by itself; pm2 doesn't manage it.
+- Also disable suspend on lid close / idle and keep the laptop plugged in on the day.
+
+### Day-to-day pm2 commands
+
+```bash
+pm2 status                        # list processes
+pm2 logs violet-monarchs          # tail logs (Ctrl+C stops watching, not the app)
+pm2 restart violet-monarchs
+pm2 stop violet-monarchs
+pm2 start violet-monarchs
+pm2 delete violet-monarchs        # remove from pm2 (then start again from ecosystem.config.js)
+```
+
+**Resetting guest state** (before the event only: it deletes logins, progress, sessions and uploaded selfies). The server keeps the sqlite file open, so stop it first:
+
+```bash
+pm2 stop violet-monarchs
+npm run reset-state
+pm2 start violet-monarchs
+```
+
+### Generate the QR code
+
+Once the final URL is known (`tailscale funnel status`):
+
+```bash
+uv run --with segno scripts/generate_qr.py https://violet-monarchs.lyrebird-gentoo.ts.net
+# without uv: python3 -m pip install --user segno && python3 scripts/generate_qr.py <url>
+```
+
+This writes `qr/qr.svg`, `qr/qr.png` and `qr/qr.pdf` fully offline (options: `--out DIR`, `--error L|M|Q|H`, `--name NAME`). It is a static code that encodes the URL directly, so it never expires. Give the printer the SVG or PDF, print at 2.5 cm or larger with the white border kept, and scan a printed proof with both an iPhone and an Android phone before printing the booklet.
+
+### Testing before the event
+
+Open the public URL on a **phone on cellular data** (not the laptop's WiFi): this proves an external device can reach the laptop through the funnel. Check the gate/login flow, staying logged in, and a bingo photo upload.
 
 ## Security notes
 

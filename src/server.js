@@ -18,7 +18,7 @@ const helpRoutes = require('./routes/help');
 const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.set('trust proxy', 1); // needed so secure cookies work behind the Cloudflare Tunnel
+app.set('trust proxy', 1); // needed so secure cookies work behind the Tailscale Funnel proxy
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -59,6 +59,6 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   res.status(500).send('Erreur serveur.');
 });
 
-app.listen(env.PORT, () => {
-  console.log(`violet-monarchs en écoute sur http://localhost:${env.PORT}`);
+app.listen(env.PORT, env.HOST, () => {
+  console.log(`violet-monarchs en écoute sur http://${env.HOST}:${env.PORT}`);
 });

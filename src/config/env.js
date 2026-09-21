@@ -6,6 +6,9 @@ const DATA_DIR = path.join(ROOT_DIR, 'data');
 
 module.exports = {
   PORT: process.env.PORT || 3000,
+  // Loopback only: the site is reached through the Tailscale tunnel, never
+  // directly from the LAN.
+  HOST: process.env.HOST || '127.0.0.1',
   // Entered on the one gate page before guests even pick their name — same
   // for everyone, gates access to the site at all (== ANSWER_ENTER in
   // scripts/database_generation.py).
