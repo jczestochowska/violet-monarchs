@@ -27,12 +27,14 @@
 
   function populateNameOptions() {
     nameSelect.innerHTML = '<option value="" disabled selected>Choisis un nom</option>';
-    ALL_GUESTS.filter((g) => g !== CURRENT_USER && !usedNames.has(g))
-      .sort((a, b) => a.localeCompare(b, 'fr'))
+    // The option value stays the guest's identity name (what the server
+    // stores and checks); the visible label is their full name.
+    ALL_GUESTS.filter((g) => g.name !== CURRENT_USER && !usedNames.has(g.name))
+      .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
       .forEach((g) => {
         const option = document.createElement('option');
-        option.value = g;
-        option.textContent = g;
+        option.value = g.name;
+        option.textContent = g.label;
         nameSelect.appendChild(option);
       });
   }

@@ -12,6 +12,11 @@ const LOGIN_PUZZLE_ID = 'ENTER';
 const OSINT_PUZZLE_ID = 'OSINT';
 const GRID_SIZE = 5;
 const NAME_COLUMN = 'Nom si initiale';
+// What the login and bingo dropdowns show ("Prénom Nom"). Only a label: the
+// guest's identity everywhere else (session, database, leaderboard) stays the
+// NAME_COLUMN value.
+const FIRST_NAME_COLUMN = 'Prénom';
+const LAST_NAME_COLUMN = 'Nom';
 const ANSWER_PREFIX = 'Answer';
 
 // "Souvenirs d'Islande" memory grid: fixed 15 (wide) x 17 (tall) size.
@@ -36,13 +41,24 @@ function loadGuestList() {
   const answerColumns = Object.keys(records[0]).filter((col) => col.startsWith(ANSWER_PREFIX));
   const puzzleIds = [LOGIN_PUZZLE_ID, ...answerColumns.map((col) => col.slice(ANSWER_PREFIX.length))];
 
+  for (const column of [NAME_COLUMN, FIRST_NAME_COLUMN, LAST_NAME_COLUMN]) {
+    if (!(column in records[0])) {
+      throw new Error(`${env.GUEST_LIST_CSV}: colonne "${column}" introuvable`);
+    }
+  }
+
   const guests = [];
+  const displayNames = new Map();
   const solutionsByUser = new Map();
 
   for (const row of records) {
     const name = row[NAME_COLUMN];
     if (!name) continue;
     guests.push(name);
+    displayNames.set(
+      name,
+      `${row[FIRST_NAME_COLUMN]} ${row[LAST_NAME_COLUMN]}`.replace(/\s+/g, ' ').trim() || name
+    );
 
     const solutions = new Map();
     for (const column of answerColumns) {
@@ -59,7 +75,7 @@ function loadGuestList() {
     );
   }
 
-  return { guests, solutionsByUser, puzzleIds };
+  return { guests, displayNames, solutionsByUser, puzzleIds };
 }
 
 function loadBingoCells() {
@@ -190,13 +206,14 @@ function loadMemoryWords(memoryGrid) {
 }
 
 function loadStaticData() {
-  const { guests, solutionsByUser, puzzleIds } = loadGuestList();
+  const { guests, displayNames, solutionsByUser, puzzleIds } = loadGuestList();
   const bingoCells = loadBingoCells();
   const memoryGrid = loadMemoryGrid();
   const memoryWords = loadMemoryWords(memoryGrid);
 
   return {
     guests,
+    displayNames,
     solutionsByUser,
     puzzleIds,
     bingoCells,

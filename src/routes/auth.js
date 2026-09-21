@@ -8,13 +8,16 @@ const router = express.Router();
 
 // Computed once at boot (guest list is static for the process lifetime) so
 // the dropdown always shows names alphabetically rather than CSV row order.
-const sortedGuests = [...staticData.guests].sort((a, b) => a.localeCompare(b, 'fr'));
+// `name` is the guest's identity (what's posted back); `label` is what's shown.
+const sortedGuests = staticData.guests
+  .map((name) => ({ name, label: staticData.displayNames.get(name) }))
+  .sort((a, b) => a.label.localeCompare(b.label, 'fr'));
 
 // Names already claimed by someone (logged in) don't show up as choices for
 // anyone else.
 function getAvailableGuests() {
   const claimed = repository.getClaimedUserNames();
-  return sortedGuests.filter((g) => !claimed.has(g));
+  return sortedGuests.filter((g) => !claimed.has(g.name));
 }
 
 router.get('/login', requireGate, (req, res) => {

@@ -21,7 +21,7 @@ router.get('/', requireAuth, (req, res) => {
 
   res.render('home', {
     currentUser: req.session.userName,
-    allGuests: staticData.guests,
+    allGuests: staticData.guests.map((name) => ({ name, label: staticData.displayNames.get(name) })),
     leaderboard,
     bingoGrid,
     gridSize: staticData.GRID_SIZE,
