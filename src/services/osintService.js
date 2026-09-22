@@ -9,6 +9,19 @@ const { normalizeText } = require('../utils/normalizeText');
 const KEYWORDS = ['canard', 'Boulingrin', 'Carmes'].map(normalizeText);
 const PHOTO_COUNT = KEYWORDS.length;
 
+// Near-miss answers that deserve an encouraging nudge instead of a flat
+// "wrong answer" — the guest has clearly found the right spot, just not
+// under the exact word we're expecting. Keyed by the stage they apply to.
+const NEAR_MISS_HINTS = new Map([
+  [
+    2,
+    {
+      match: normalizeText('Grand Rond'),
+      message: "Tu y es presque, mais la réponse tient en un seul mot !",
+    },
+  ],
+]);
+
 function getStage(userName) {
   return repository.getOsintStage(userName);
 }
@@ -16,11 +29,18 @@ function getStage(userName) {
 /**
  * Only the keyword of the newest revealed photo counts: typing an earlier
  * one again, or a later one early, is just a wrong answer.
- * @returns {{result: 'wrong'|'advanced'|'solved', stage: number}}
+ * @returns {{result: 'wrong'|'advanced'|'solved'|'hint', stage: number, message?: string}}
  */
 function attempt(userName, text) {
   const stage = getStage(userName);
-  if (normalizeText(text) !== KEYWORDS[stage - 1]) return { result: 'wrong', stage };
+  const normalizedText = normalizeText(text);
+
+  const hint = NEAR_MISS_HINTS.get(stage);
+  if (hint && normalizedText === hint.match) {
+    return { result: 'hint', stage, message: hint.message };
+  }
+
+  if (normalizedText !== KEYWORDS[stage - 1]) return { result: 'wrong', stage };
 
   const now = new Date().toISOString();
 
