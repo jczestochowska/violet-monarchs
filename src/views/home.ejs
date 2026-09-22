@@ -12,6 +12,15 @@
     <span class="current-user">Connecté·e en tant que <%= currentUser %></span>
   </header>
 
+  <section class="panel" id="solutions-section">
+    <h2 class="glitch-move">Solutions</h2>
+    <form id="puzzle-answer-form" class="puzzle-answer-form">
+      <label for="puzzle-answer-input">Dès que tu penses avoir trouvé une solution à une énigme, entre la ci-dessous</label>
+      <input type="text" id="puzzle-answer-input" autocomplete="off" placeholder="Tape ta réponse ici">
+      <button type="submit">Valider</button>
+    </form>
+  </section>
+
   <section class="panel" id="leaderboard-section">
     <h2>Classement</h2>
     <div class="leaderboard-with-legend">
@@ -26,16 +35,11 @@
         <p><span class="legend-swatch legend-swatch-blocked"></span> Bloqué</p>
       </aside>
     </div>
-
-    <form id="puzzle-answer-form" class="puzzle-answer-form">
-      <label for="puzzle-answer-input">Dès que tu penses avoir trouvé une solution à une énigme, entre la ci-dessous</label>
-      <input type="text" id="puzzle-answer-input" autocomplete="off" placeholder="Tape ta réponse ici">
-      <button type="submit">Valider</button>
-    </form>
   </section>
 
   <section class="panel" id="osint-section">
     <h2>Où sont les mariés ?</h2>
+    <p class="osint-hint">Appuyez sur la photo pour l'agrandir</p>
     <div class="osint-photos" id="osint-photos">
       <% [1, 2, 3].forEach(function(n) { %>
         <% if (n <= osintStage) { %>
@@ -76,6 +80,23 @@
         Ne te précipite pas, sous peine de ralentir !
       </p>
     </div>
+    <% const usedGuestNames = new Set(bingoGrid.filter((c) => c.submittedName).map((c) => c.submittedName)); %>
+    <% const usedGuests = allGuests.filter((g) => usedGuestNames.has(g.name)).sort((a, b) => a.label.localeCompare(b.label, 'fr')); %>
+    <details class="bingo-used-names" id="bingo-used-names">
+      <summary>
+        <span>Personnes déjà dans la grille</span>
+        <span class="bingo-used-names-count" id="bingo-used-names-count"><%= usedGuests.length %></span>
+      </summary>
+      <div class="bingo-used-names-list" id="bingo-used-names-list">
+        <% if (usedGuests.length === 0) { %>
+          <p class="bingo-used-names-empty" id="bingo-used-names-empty">Aucune pour l'instant.</p>
+        <% } else { %>
+          <% usedGuests.forEach(function(g) { %>
+            <span class="bingo-used-name-chip"><%= g.label %></span>
+          <% }); %>
+        <% } %>
+      </div>
+    </details>
     <div class="bingo-grid" style="--grid-size: <%= gridSize %>;">
       <% bingoGrid.forEach(function(cell) { %>
         <button
@@ -97,6 +118,8 @@
       <% }); %>
     </div>
   </section>
+
+  <div class="bottom-spacer" aria-hidden="true"></div>
 
   <div id="bingo-modal" class="modal-overlay" hidden>
     <div class="modal-box">
@@ -146,14 +169,18 @@
     </div>
   </div>
 
-  <div id="osint-popup" class="modal-overlay" hidden>
+  <!-- Shared correct/wrong answer feedback popup for both the solutions box
+       (public/js/leaderboard.js) and the osint box (public/js/osint.js). A
+       modal is much harder to miss than the old bottom toast. -->
+  <div id="answer-popup" class="modal-overlay" hidden>
     <div class="modal-box popup-box">
-      <p id="osint-popup-text"></p>
-      <button type="button" id="osint-popup-close">Fermer</button>
+      <p id="answer-popup-text"></p>
+      <button type="button" id="answer-popup-close">Fermer</button>
     </div>
   </div>
 
   <div id="osint-lightbox" class="osint-lightbox" hidden>
+    <button type="button" id="osint-lightbox-close" class="modal-close-btn osint-lightbox-close" aria-label="Fermer">&times;</button>
     <img id="osint-lightbox-img" alt="">
   </div>
 

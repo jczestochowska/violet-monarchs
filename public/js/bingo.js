@@ -15,6 +15,9 @@
   const popup = document.getElementById('bingo-popup');
   const popupClose = document.getElementById('bingo-popup-close');
 
+  const usedNamesCount = document.getElementById('bingo-used-names-count');
+  const usedNamesList = document.getElementById('bingo-used-names-list');
+
   let activeCellButton = null;
 
   // Seeded from cells already solved server-side, so a guest can't reuse the
@@ -25,16 +28,39 @@
     if (name) usedNames.add(name);
   });
 
+  function labelFor(name) {
+    const guest = ALL_GUESTS.find((g) => g.name === name);
+    return guest ? guest.label : name;
+  }
+
+  // Keeps the "already used" list under the poem in sync with usedNames —
+  // called once a submission is confirmed correct.
+  function addUsedNameChip(name) {
+    const empty = usedNamesList.querySelector('.bingo-used-names-empty');
+    if (empty) empty.remove();
+    const chip = document.createElement('span');
+    chip.className = 'bingo-used-name-chip';
+    chip.textContent = labelFor(name);
+    usedNamesList.appendChild(chip);
+    usedNamesCount.textContent = String(usedNames.size);
+  }
+
   function populateNameOptions() {
     nameSelect.innerHTML = '<option value="" disabled selected>Choisis un nom</option>';
     // The option value stays the guest's identity name (what the server
-    // stores and checks); the visible label is their full name.
-    ALL_GUESTS.filter((g) => g.name !== CURRENT_USER && !usedNames.has(g.name))
+    // stores and checks); the visible label is their full name. Names
+    // already used elsewhere in the grid stay in the list — struck through
+    // and disabled — instead of disappearing, so guests can see who's taken.
+    ALL_GUESTS.filter((g) => g.name !== CURRENT_USER)
       .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
       .forEach((g) => {
         const option = document.createElement('option');
         option.value = g.name;
         option.textContent = g.label;
+        if (usedNames.has(g.name)) {
+          option.disabled = true;
+          option.className = 'bingo-name-used';
+        }
         nameSelect.appendChild(option);
       });
   }
@@ -54,9 +80,20 @@
     activeCellButton = null;
   }
 
+  // Re-clicking an already-solved cell is a read-only recap: what the task
+  // was and who was picked for it, shown in the shared answer popup.
+  function showSolvedCellPopup(button) {
+    const description = button.dataset.description;
+    const label = labelFor(button.dataset.submittedName);
+    window.showAnswerPopup(`« ${description} » : tu as choisi ${label} pour cette case`);
+  }
+
   document.querySelectorAll('.bingo-cell').forEach((btn) => {
     btn.addEventListener('click', () => {
-      if (btn.dataset.solved === 'true') return;
+      if (btn.dataset.solved === 'true') {
+        showSolvedCellPopup(btn);
+        return;
+      }
       openModalFor(btn);
     });
   });
@@ -127,6 +164,7 @@
         submitBtn.disabled = false;
         if (data.correct) {
           usedNames.add(selectedName);
+          addUsedNameChip(selectedName);
           markCellSolved(activeCellButton, data.letter, selectedName);
           closeModal();
           highlightCompletedLines(data.lineCompleted, data.showPrizePopup);

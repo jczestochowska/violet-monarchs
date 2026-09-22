@@ -31,6 +31,31 @@
   // Shared with public/js/memory.js.
   window.showToast = showToast;
 
+  // Correct/wrong answer feedback popup, shared with public/js/osint.js — a
+  // modal is much harder to miss than the toast at the bottom of the screen.
+  const answerPopup = document.getElementById('answer-popup');
+  const answerPopupText = document.getElementById('answer-popup-text');
+  const answerPopupClose = document.getElementById('answer-popup-close');
+
+  // variant: 'error' (wrong answer, red) | 'hint' (close but not quite,
+  // orange) | omitted (correct/informational, default green).
+  function showAnswerPopup(message, variant) {
+    answerPopupText.textContent = message;
+    answerPopup.classList.toggle('popup-error', variant === 'error');
+    answerPopup.classList.toggle('popup-hint', variant === 'hint');
+    answerPopup.hidden = false;
+  }
+
+  answerPopupClose.addEventListener('click', () => {
+    answerPopup.hidden = true;
+  });
+  answerPopup.addEventListener('click', (e) => {
+    if (e.target === answerPopup) answerPopup.hidden = true;
+  });
+
+  // Shared with public/js/osint.js.
+  window.showAnswerPopup = showAnswerPopup;
+
   const islandePopup = document.getElementById('islande-popup');
   const islandePopupClose = document.getElementById('islande-popup-close');
   if (islandePopupClose) {
@@ -150,7 +175,7 @@
       .then((data) => {
         if (data.correct) {
           answerInput.value = '';
-          showToast('Bonne réponse !');
+          showAnswerPopup('Bonne réponse !');
           fetchAndRender();
         } else if (data.memoryUnlocked) {
           // Secret keyword, not a puzzle answer: no leaderboard change, and
@@ -163,7 +188,9 @@
           }
         } else {
           shakeAnswerBox();
-          showToast(data.error || 'Mauvaise réponse, réessaye !', true);
+          // data.error, when present, is a rate-limit message and takes
+          // priority over the generic "wrong answer" wording.
+          showAnswerPopup(data.error || `« ${answer.trim()} » n'est pas une solution`, 'error');
         }
       })
       .catch(() => showToast('Erreur réseau, réessaye.', true));

@@ -21,6 +21,10 @@ function getAvailableGuests() {
 }
 
 router.get('/login', requireGate, (req, res) => {
+  // Once logged in, a phone's back button/gesture must not be able to show
+  // this page again straight from cache (bfcache) without hitting the
+  // server — that would skip the redirect below entirely.
+  res.set('Cache-Control', 'no-store');
   if (req.session && req.session.userName) {
     return res.redirect('/');
   }
@@ -35,6 +39,8 @@ const loginLimiter = rateLimit.login((req, res) =>
 );
 
 router.post('/login', requireGate, loginLimiter, (req, res) => {
+  res.set('Cache-Control', 'no-store');
+
   // Once a name is picked it's locked in for the session — there's no
   // logout, so re-posting here can't be used to switch identity and submit
   // answers as someone else.

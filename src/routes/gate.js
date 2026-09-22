@@ -10,6 +10,10 @@ const router = express.Router();
 // gate even to someone already logged in. Their session is untouched, so
 // re-entering the password just bounces them through /login back to '/'.
 router.get('/gate', (req, res) => {
+  // Same reasoning as /login: without this, a phone's back button/gesture
+  // can restore this page straight from cache (bfcache) after the gate (or
+  // login) has already been passed, skipping the redirects below entirely.
+  res.set('Cache-Control', 'no-store');
   if (req.query.restart === undefined) {
     if (req.session && req.session.userName) {
       return res.redirect('/');
@@ -29,6 +33,8 @@ const gateLimiter = rateLimit.gate((req, res) =>
 );
 
 router.post('/gate', gateLimiter, (req, res) => {
+  res.set('Cache-Control', 'no-store');
+
   const password = (req.body.password || '').toString();
   const ok =
     env.GLOBAL_PASSWORD.length > 0 &&

@@ -8,22 +8,34 @@
   const photos = document.getElementById('osint-photos');
   const form = document.getElementById('osint-form');
   const input = document.getElementById('osint-input');
-  const popup = document.getElementById('osint-popup');
-  const popupText = document.getElementById('osint-popup-text');
-  const popupClose = document.getElementById('osint-popup-close');
   const lightbox = document.getElementById('osint-lightbox');
   const lightboxImg = document.getElementById('osint-lightbox-img');
+  const lightboxClose = document.getElementById('osint-lightbox-close');
   if (!photos) return;
+
+  // Opening pushes a history entry so a phone's back button/gesture closes
+  // the lightbox instead of leaving the page. Closing any other way (X,
+  // click, Escape) pops that entry again so a real back press still only
+  // takes one tap to leave the page.
+  let lightboxHistoryPushed = false;
 
   function openLightbox(img) {
     lightboxImg.src = img.src;
     lightboxImg.alt = img.alt;
     lightbox.hidden = false;
+    history.pushState({ osintLightbox: true }, '');
+    lightboxHistoryPushed = true;
   }
 
-  function closeLightbox() {
+  function closeLightbox(options) {
+    if (lightbox.hidden) return;
     lightbox.hidden = true;
     lightboxImg.removeAttribute('src');
+    const fromPopstate = options && options.fromPopstate;
+    if (lightboxHistoryPushed) {
+      lightboxHistoryPushed = false;
+      if (!fromPopstate) history.back();
+    }
   }
 
   // Delegated so photos revealed later (below) are clickable too.
@@ -31,16 +43,16 @@
     const slot = e.target.closest('.osint-slot-open');
     if (slot) openLightbox(slot.querySelector('img'));
   });
-  lightbox.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', () => closeLightbox());
+  lightboxClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeLightbox();
+  });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !lightbox.hidden) closeLightbox();
   });
-
-  popupClose.addEventListener('click', () => {
-    popup.hidden = true;
-  });
-  popup.addEventListener('click', (e) => {
-    if (e.target === popup) popup.hidden = true;
+  window.addEventListener('popstate', () => {
+    if (!lightbox.hidden) closeLightbox({ fromPopstate: true });
   });
 
   function revealPhoto(n) {
@@ -82,17 +94,22 @@
         if (data.result === 'advanced') {
           input.value = '';
           revealPhoto(data.stage);
-          popupText.textContent = ADVANCE_MESSAGES[data.stage] || '';
-          popup.hidden = false;
+          window.showAnswerPopup(ADVANCE_MESSAGES[data.stage] || '');
         } else if (data.result === 'solved') {
           // Same feedback as a correct answer in the main box; nothing left to
           // answer, so the form goes away.
           form.remove();
-          window.showToast('Bonne réponse !');
+          window.showAnswerPopup('Bonne réponse !');
           window.refreshLeaderboard();
+        } else if (data.result === 'hint') {
+          // Close, but not the exact expected word — an encouraging nudge,
+          // not a wrong-answer popup (no shake, keeps their input as-is).
+          window.showAnswerPopup(data.message, 'hint');
         } else {
           shakeInput();
-          window.showToast(data.error || 'Mauvaise réponse, réessaye !', true);
+          // data.error, when present, is a rate-limit message and takes
+          // priority over the generic "wrong answer" wording.
+          window.showAnswerPopup(data.error || `« ${text.trim()} » n'est pas une solution`, 'error');
         }
       })
       .catch(() => window.showToast('Erreur réseau, réessaye.', true));
